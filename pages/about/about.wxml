@@ -1,0 +1,50 @@
+<view class="page t-{{theme}}">
+  <view class="about">
+    <image class="about__logo" src="/assets/moon-tile.png" mode="aspectFit" />
+
+    <view class="eyebrow">— 关于本书</view>
+    <view class="about__title">关于本书<text class="about__stop">.</text></view>
+    <view class="about__lede">一本讲透 Kimi 的书, 和一个写字的人。</view>
+
+    <view class="about__section">
+      <view class="about__p">
+        很多人对 Kimi 的印象还停在「长文本」那一年。到 K3, 它长成一套对标
+        OpenAI / Anthropic 的 agent 栈: 四模式、做出成品的 Agent、上百子
+        agent 的 Swarm、Deep Research、跑在终端的 Kimi Code, 和一套双兼容的
+        API。这本书给这套栈画张图: 每块产品干什么、买哪档够用、什么时候回
+        frontier。
+      </view>
+    </view>
+
+    <view class="about__section hairline">
+      <view class="about__label eyebrow">作者</view>
+      <view class="about__p">
+        本书由 Zhapar 撰写与维护。写代码, 也写字, 长期关心的是工具怎样进入
+        真实工作, 而不是发布当天的漂亮话。
+      </view>
+      <view class="about__link" bindtap="copy" data-text="hi@zhaphar.com" data-label="邮箱">
+        hi@zhaphar.com · 复制
+      </view>
+    </view>
+
+    <view class="about__section hairline">
+      <view class="about__label eyebrow">授权</view>
+      <view class="about__p">
+        本书内容遵循 CC BY-NC-ND 4.0: 允许免费阅读、AI 摘读、引用与转发,
+        须保留作者署名 (Zhapar) 与原文链接; 禁止商业再发布与衍生改写。
+      </view>
+    </view>
+
+    <view class="about__section hairline">
+      <view class="about__label eyebrow">网页版</view>
+      <view class="about__p">
+        本小程序是阅读端; 评论区、PDF 下载、AI 可读版 (llms.md) 都在网页版。
+      </view>
+      <view class="about__link" bindtap="copy" data-text="https://kimi.read.wiki" data-label="网址">
+        kimi.read.wiki · 复制
+      </view>
+    </view>
+
+    <view class="about__footer mono">KIMI COOKBOOK · NO. 01</view>
+  </view>
+</view>

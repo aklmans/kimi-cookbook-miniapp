@@ -1,0 +1,102 @@
+.hero {
+  padding: 48rpx 48rpx 96rpx;
+}
+
+.cover-card {
+  background: var(--card-ink);
+  border-radius: 20rpx;
+  height: 400rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24rpx;
+  margin-bottom: 64rpx;
+}
+
+.cover-card__moon {
+  width: 180rpx;
+  height: 180rpx;
+}
+
+.cover-card__brand {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 22rpx;
+  font-weight: 600;
+  letter-spacing: 12rpx;
+  color: #efe8dc;
+}
+
+.hero__eyebrow {
+  margin-bottom: 24rpx;
+}
+
+.hero__title {
+  font-size: 52rpx;
+  font-weight: 600;
+  line-height: 1.35;
+  margin-bottom: 28rpx;
+  color: var(--ink);
+}
+
+.hero__stop {
+  color: var(--accent);
+}
+
+.hero__lede {
+  font-size: 30rpx;
+  line-height: 1.75;
+  color: var(--ink-2);
+  margin-bottom: 56rpx;
+}
+
+.hero__stats {
+  display: flex;
+  gap: 64rpx;
+  border-top: 1rpx solid var(--border);
+  padding-top: 28rpx;
+  margin-bottom: 56rpx;
+}
+
+.stat__label {
+  margin-bottom: 8rpx;
+}
+
+.stat__value {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.hero__actions {
+  display: flex;
+  gap: 24rpx;
+  margin-bottom: 64rpx;
+}
+
+.hero__cta {
+  flex: 1;
+}
+
+.hero__about {
+  font-size: 26rpx;
+  color: var(--ink-3);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 6rpx;
+}
+
+.state {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32rpx;
+  padding: 96rpx 48rpx;
+}
+
+.state__text {
+  color: var(--ink-3);
+  font-size: 28rpx;
+}

@@ -1,0 +1,58 @@
+.about {
+  padding: 64rpx 48rpx 96rpx;
+}
+
+.about__logo {
+  width: 120rpx;
+  height: 120rpx;
+  margin-bottom: 48rpx;
+}
+
+.about__title {
+  font-size: 56rpx;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 16rpx 0;
+}
+
+.about__stop {
+  color: var(--accent);
+}
+
+.about__lede {
+  font-size: 32rpx;
+  color: var(--ink-2);
+  margin-bottom: 56rpx;
+}
+
+.about__section {
+  padding: 32rpx 0;
+}
+
+.about__label {
+  margin-bottom: 16rpx;
+}
+
+.about__p {
+  font-size: 30rpx;
+  line-height: 1.8;
+  color: var(--ink-2);
+  margin-bottom: 12rpx;
+}
+
+.about__link {
+  display: inline-block;
+  font-size: 26rpx;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 6rpx;
+  padding: 8rpx 0;
+}
+
+.about__footer {
+  margin-top: 80rpx;
+  font-size: 22rpx;
+  letter-spacing: 6rpx;
+  color: var(--ink-3);
+}

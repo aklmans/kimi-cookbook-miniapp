@@ -1,0 +1,60 @@
+.reader {
+  padding: 32rpx 40rpx 48rpx;
+}
+
+.reader__end {
+  margin: 0 40rpx;
+  padding: 40rpx 0;
+}
+
+.reader__kicker {
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--ink-3);
+  letter-spacing: 8rpx;
+}
+
+.state {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32rpx;
+  padding: 96rpx 48rpx;
+}
+
+.state__text {
+  color: var(--ink-3);
+  font-size: 28rpx;
+}
+
+.bottombar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  border-top: 1rpx solid var(--border);
+  background: var(--bg);
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 10;
+}
+
+.bottombar__item {
+  flex: 1;
+  text-align: center;
+  padding: 22rpx 0;
+  font-size: 26rpx;
+  color: var(--ink-2);
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+}
+
+.bottombar__item.is-disabled {
+  color: var(--ink-3);
+  opacity: 0.5;
+}
+
+.bottombar__space {
+  height: 110rpx;
+}

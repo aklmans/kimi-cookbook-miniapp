@@ -1,0 +1,45 @@
+<view class="page t-{{theme}}">
+  <view wx:if="{{error}}" class="state">
+    <view class="state__text">{{error}}</view>
+    <button class="btn" bindtap="loadBook">重试</button>
+  </view>
+
+  <view wx:elif="{{book}}" class="hero">
+    <view class="cover-card">
+      <image class="cover-card__moon" src="/assets/moon-tile.png" mode="aspectFit" />
+      <view class="cover-card__brand">KIMI</view>
+    </view>
+
+    <view class="hero__eyebrow eyebrow">— 技术 · 实践</view>
+    <view class="hero__title">
+      {{book.coverTitle}}<text class="hero__stop">.</text>
+    </view>
+    <view class="hero__lede">{{book.lede}}</view>
+
+    <view class="hero__stats">
+      <view class="stat">
+        <view class="stat__label eyebrow">章节</view>
+        <view class="stat__value">{{book.chapters.length}}</view>
+      </view>
+      <view class="stat">
+        <view class="stat__label eyebrow">更新</view>
+        <view class="stat__value">{{book.updated}}</view>
+      </view>
+      <view class="stat">
+        <view class="stat__label eyebrow">作者</view>
+        <view class="stat__value">{{book.author}}</view>
+      </view>
+    </view>
+
+    <view class="hero__actions">
+      <button class="btn btn--primary hero__cta" bindtap="startReading">{{resumeLabel}}</button>
+      <button class="btn" bindtap="openToc">目录</button>
+    </view>
+
+    <view class="hero__about" bindtap="openAbout">关于本书 · 授权 →</view>
+  </view>
+
+  <view wx:else class="state">
+    <view class="state__text">正在打开这本书…</view>
+  </view>
+</view>

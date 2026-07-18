@@ -1,0 +1,43 @@
+<view class="page t-{{theme}}">
+  <view wx:if="{{error}}" class="state">
+    <view class="state__text">{{error}}</view>
+    <button class="btn" bindtap="loadChapter">重试</button>
+  </view>
+
+  <block wx:elif="{{html}}">
+    <view class="reader">
+      <mp-html
+        content="{{html}}"
+        container-style="{{containerStyle}}"
+        tag-style="{{tagStyle}}"
+        bindlinktap="onLinkTap"
+        bindimgtap="onImgTap"
+      />
+    </view>
+
+    <view class="reader__end hairline">
+      <view class="reader__kicker">· 本章完 ·</view>
+    </view>
+  </block>
+
+  <view wx:else class="state">
+    <view class="state__text">正在翻页…</view>
+  </view>
+
+  <view class="bottombar t-{{theme}}">
+    <view class="bottombar__item {{!chapter || !chapter.prev ? 'is-disabled' : ''}}" bindtap="openPrev">
+      ← 上一章
+    </view>
+    <view class="bottombar__item" bindtap="toggleFont">
+      {{fontLarge ? 'A−' : 'A+'}}
+    </view>
+    <view class="bottombar__item" bindtap="toggleTheme">
+      {{themeLabel}}
+    </view>
+    <view class="bottombar__item" bindtap="openToc">目录</view>
+    <view class="bottombar__item {{!chapter || !chapter.next ? 'is-disabled' : ''}}" bindtap="openNext">
+      下一章 →
+    </view>
+  </view>
+  <view class="bottombar__space" />
+</view>

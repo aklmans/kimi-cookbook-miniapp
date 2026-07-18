@@ -1,0 +1,81 @@
+.toc-head {
+  padding: 48rpx 48rpx 40rpx;
+}
+
+.toc-head__title {
+  font-size: 56rpx;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 16rpx 0 12rpx;
+}
+
+.toc-head__stop {
+  color: var(--accent);
+}
+
+.toc-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 28rpx;
+  padding: 32rpx 48rpx;
+  border-top: 1rpx solid var(--border);
+}
+
+.toc-row--hover {
+  background: var(--code-bg);
+}
+
+.toc-row__num {
+  font-size: 26rpx;
+  color: var(--ink-3);
+  padding-top: 8rpx;
+  flex: none;
+  width: 56rpx;
+}
+
+.toc-row__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.toc-row__title {
+  font-size: 32rpx;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.toc-row.is-read .toc-row__title,
+.toc-row.is-read .toc-row__num,
+.toc-row.is-read .toc-row__time {
+  color: var(--ink-3);
+}
+
+.toc-row__lede {
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: var(--ink-3);
+  margin-top: 8rpx;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.toc-row__time {
+  font-size: 22rpx;
+  color: var(--ink-3);
+  padding-top: 10rpx;
+  flex: none;
+}
+
+.state {
+  padding: 96rpx 48rpx;
+  display: flex;
+  justify-content: center;
+}
+
+.state__text {
+  color: var(--ink-3);
+  font-size: 28rpx;
+}

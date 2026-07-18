@@ -1,0 +1,18 @@
+{
+  "pages": [
+    "pages/book/book",
+    "pages/toc/toc",
+    "pages/read/read",
+    "pages/about/about"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#FAFAFA",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "Kimi Cookbook",
+    "backgroundColor": "#FAFAFA",
+    "backgroundTextStyle": "dark",
+    "enablePullDownRefresh": false
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

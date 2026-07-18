@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "Kimi Cookbook",
+  "usingComponents": {
+    "mp-html": "/components/mp-html/index"
+  }
+}
