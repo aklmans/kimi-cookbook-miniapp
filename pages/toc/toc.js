@@ -1,4 +1,4 @@
-import { getBook, isVisited, explainError } from "../../utils/api";
+import { getBook, isVisited, isFinished, explainError } from "../../utils/api";
 import { applyTheme } from "../../utils/theme";
 
 Page({
@@ -16,7 +16,7 @@ Page({
         this.setData({ book });
         this.refreshRows();
       })
-      .catch(() => this.setData({ error: "加载失败，请检查网络后重试" }));
+      .catch((err) => this.setData({ error: explainError(err) }));
   },
 
   onShow() {
@@ -40,6 +40,7 @@ Page({
     const rows = this.data.book.chapters.map((c) => ({
       ...c,
       visited: isVisited(c.slug),
+      finished: isFinished(c.slug),
     }));
     this.setData({ rows });
   },

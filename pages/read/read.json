@@ -1,5 +1,6 @@
 {
   "navigationBarTitleText": "Kimi Cookbook",
+  "onReachBottomDistance": 200,
   "usingComponents": {
     "mp-html": "/components/mp-html/index"
   }

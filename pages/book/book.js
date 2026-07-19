@@ -1,4 +1,4 @@
-import { getBook, getLastRead, isVisited, explainError } from "../../utils/api";
+import { getBook, getLastRead, isFinished, explainError } from "../../utils/api";
 import { applyTheme } from "../../utils/theme";
 
 Page({
@@ -52,13 +52,14 @@ Page({
         this.setData({ book });
         this.refreshResume();
       })
-      .catch(() => this.setData({ error: "加载失败，请检查网络后重试" }));
+      .catch((err) => this.setData({ error: explainError(err) }));
   },
 
   refreshResume() {
     const book = this.data.book;
     if (!book || !book.chapters.length) return;
-    const readCount = book.chapters.filter((c) => isVisited(c.slug)).length;
+    // 已读 = 读到章末 (markFinished), not merely opened (markVisited).
+    const readCount = book.chapters.filter((c) => isFinished(c.slug)).length;
     const last = getLastRead();
     const exists = last && book.chapters.some((c) => c.slug === last.slug);
     if (exists) {

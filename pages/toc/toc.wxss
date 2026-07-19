@@ -64,6 +64,16 @@
   color: var(--ink-3);
 }
 
+/* "在读" — opened but not yet scrolled to the end; finished rows go gray
+   via .is-read instead. */
+.toc-row__reading {
+  font-size: 18rpx;
+  letter-spacing: 2rpx;
+  color: var(--accent);
+  margin-left: 16rpx;
+  vertical-align: 4rpx;
+}
+
 .toc-row__lede {
   font-size: 26rpx;
   line-height: 1.6;

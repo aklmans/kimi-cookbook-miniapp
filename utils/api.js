@@ -106,7 +106,7 @@ export function prefetchChapter(slug) {
     .catch(() => {});
 }
 
-/* ── reading state (visited + progress), all local ── */
+/* ── reading state (visited + finished + progress), all local ── */
 
 export function markVisited(slug) {
   try {
@@ -124,9 +124,32 @@ export function isVisited(slug) {
   }
 }
 
-export function saveProgress(slug, scrollTop) {
+/* "Finished" is the honest counterpart of "visited": set only when the
+   reader scrolls to the end of the chapter (onReachBottom), and what the
+   book/toc pages count as 已读. */
+export function markFinished(slug) {
   try {
-    wx.setStorageSync(`kc:progress:${slug}`, { scrollTop, time: Date.now() });
+    wx.setStorageSync(`kc:finished:${slug}`, Date.now());
+  } catch (e) {
+    /* ignore */
+  }
+}
+
+export function isFinished(slug) {
+  try {
+    return Boolean(wx.getStorageSync(`kc:finished:${slug}`));
+  } catch (e) {
+    return false;
+  }
+}
+
+/** Progress is stored as a ratio (scrollTop / scrollable length), not an
+    absolute offset — absolute offsets land wrong once the reader changes
+    font size or images finish loading after the save. Legacy entries
+    carry { scrollTop } instead of { ratio }; readers fall back to them. */
+export function saveProgress(slug, ratio) {
+  try {
+    wx.setStorageSync(`kc:progress:${slug}`, { ratio, time: Date.now() });
     wx.setStorageSync("kc:last-read", { slug, time: Date.now() });
   } catch (e) {
     /* ignore */

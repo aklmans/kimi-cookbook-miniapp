@@ -1,6 +1,8 @@
 <view class="page t-{{theme}}">
-  <!-- skeleton while the chapter is in flight -->
-  <view wx:if="{{!html && !error}}" class="reader">
+  <!-- skeleton while the chapter is in flight (keyed on `loaded`, not
+       `html`: theme/font flushes briefly empty `html` mid-read and must
+       not flash the skeleton) -->
+  <view wx:if="{{!loaded && !error}}" class="reader">
     <view class="skeleton reader__sk-eyebrow" />
     <view class="skeleton reader__sk-title" />
     <view class="skeleton reader__sk-lede" />
@@ -65,7 +67,7 @@
 
   <!-- in-chapter outline FAB -->
   <view
-    wx:if="{{outline.length > 0 && html}}"
+    wx:if="{{outline.length > 0 && loaded}}"
     class="fab t-{{theme}} {{barHidden ? 'fab--down' : ''}}"
     bindtap="toggleOutline"
   >≡</view>

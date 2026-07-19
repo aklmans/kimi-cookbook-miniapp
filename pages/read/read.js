@@ -2,6 +2,7 @@ import {
   getBook,
   getChapter,
   markVisited,
+  markFinished,
   saveProgress,
   getProgress,
   prefetchChapter,
@@ -26,6 +27,9 @@ Page({
     themeLabel: "跟随系统",
     fontLarge: false,
     chapter: null,
+    /** Chapter payload rendered at least once — drives the skeleton, which
+        must survive the brief html flushes of theme/font re-bakes. */
+    loaded: false,
     html: "",
     tagStyle: {},
     containerStyle: "",
@@ -99,8 +103,35 @@ Page({
     if (this.scrollTimer) return;
     this.scrollTimer = setTimeout(() => {
       this.scrollTimer = null;
-      saveProgress(this.slug, e.scrollTop);
+      this.saveProgressRatio();
     }, 400);
+  },
+
+  /** Page scroll metrics, measured on demand: the ratio representation
+      survives font-size changes and late-loading images, which absolute
+      scrollTop values do not. */
+  measureScroll() {
+    return new Promise((resolve) => {
+      wx.createSelectorQuery()
+        .select(".page")
+        .boundingClientRect()
+        .selectViewport()
+        .scrollOffset()
+        .exec((res) => {
+          const rect = res && res[0];
+          const offset = res && res[1];
+          if (!rect || !offset) return resolve(null);
+          const info = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync();
+          resolve({ pageH: rect.height, scrollTop: offset.scrollTop, winH: info.windowHeight });
+        });
+    });
+  },
+
+  async saveProgressRatio() {
+    const m = await this.measureScroll();
+    if (!m) return;
+    const max = m.pageH - m.winH;
+    saveProgress(this.slug, max > 0 ? Math.min(1, m.scrollTop / max) : 0);
   },
 
   loadChapter() {
@@ -110,6 +141,7 @@ Page({
         markVisited(this.slug);
         this.setData({
           chapter,
+          loaded: true,
           html: chapter.html,
           outline: chapter.outline || [],
           references: chapter.references || [],
@@ -119,14 +151,27 @@ Page({
         this.restoreScroll();
         if (chapter.next) prefetchChapter(chapter.next.slug);
       })
-      .catch(() => this.setData({ error: "加载失败，请检查网络后重试" }));
+      .catch((err) => this.setData({ error: explainError(err) }));
+  },
+
+  /** Reaching the endcard counts as finishing the chapter — the honest
+      counterpart to markVisited-on-load. */
+  onReachBottom() {
+    if (this.data.loaded) markFinished(this.slug);
   },
 
   restoreScroll() {
     const progress = getProgress(this.slug);
     wx.nextTick(() => {
-      setTimeout(() => {
-        if (progress && progress.scrollTop > 120) {
+      setTimeout(async () => {
+        if (progress && typeof progress.ratio === "number") {
+          const m = await this.measureScroll();
+          if (m) {
+            const target = Math.round(progress.ratio * (m.pageH - m.winH));
+            if (target > 120) wx.pageScrollTo({ scrollTop: target, duration: 0 });
+          }
+        } else if (progress && progress.scrollTop > 120) {
+          /* Legacy absolute entry from before ratio-based progress. */
           wx.pageScrollTo({ scrollTop: progress.scrollTop, duration: 0 });
         }
         // Gate saving until the restored position (or the top) has been
@@ -143,15 +188,39 @@ Page({
       tagStyle: readerTagStyle(theme, this.data.fontLarge),
       containerStyle: `font-size:${base}px;line-height:1.8;color:${theme === "dark" ? "#fafafa" : "#1a1a1a"};max-width:680px;margin:0 auto;`,
     });
-    // mp-html only re-parses when `content` changes — a tagStyle update
-    // alone leaves the already-baked node styles stale (the article would
-    // keep the old theme's colors). Flush the content so the new styles
-    // get baked in.
+    this.flushContent();
+  },
+
+  /* mp-html only re-parses when `content` changes — a tagStyle update
+     alone leaves the already-baked node styles stale (the article would
+     keep the old theme's colors). Flush the content so the new styles get
+     baked in, and carry the scroll RATIO across the re-render: the flush
+     briefly collapses the page height (clamping scrollTop), and a font
+     toggle changes every offset, so only a ratio lands the reader back
+     where they were. Saving is gated off until the restore lands. */
+  async flushContent() {
     const html = this.data.html;
-    if (html) {
-      this.setData({ html: "" });
-      wx.nextTick(() => this.setData({ html }));
-    }
+    if (!html) return;
+    const m = await this.measureScroll();
+    const max = m ? m.pageH - m.winH : 0;
+    const ratio = m && max > 0 ? m.scrollTop / max : null;
+    this.restored = false;
+    this.setData({ html: "" });
+    wx.nextTick(() => {
+      this.setData({ html });
+      setTimeout(async () => {
+        if (ratio != null) {
+          const after = await this.measureScroll();
+          if (after) {
+            wx.pageScrollTo({
+              scrollTop: Math.round(ratio * (after.pageH - after.winH)),
+              duration: 0,
+            });
+          }
+        }
+        this.restored = true;
+      }, 300);
+    });
   },
 
   toggleFont() {

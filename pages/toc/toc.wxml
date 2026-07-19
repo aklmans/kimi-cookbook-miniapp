@@ -26,14 +26,14 @@
     <view
       wx:for="{{rows.length ? rows : (book ? book.chapters : [])}}"
       wx:key="slug"
-      class="toc-row {{item.visited ? 'is-read' : ''}}"
+      class="toc-row {{item.finished ? 'is-read' : ''}}"
       bindtap="openChapter"
       data-slug="{{item.slug}}"
       hover-class="toc-row--hover"
     >
       <view class="toc-row__num mono">{{item.number}}</view>
       <view class="toc-row__body">
-        <view class="toc-row__title">{{item.title}}</view>
+        <view class="toc-row__title">{{item.title}}<text wx:if="{{item.visited && !item.finished}}" class="toc-row__reading mono">在读</text></view>
         <view class="toc-row__lede">{{item.lede}}</view>
       </view>
       <view class="toc-row__time mono">{{item.readTime}}</view>
