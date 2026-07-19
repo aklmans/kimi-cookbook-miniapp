@@ -24,6 +24,16 @@ App({
     this.loadTsanger();
     // Warm the book payload so the first page paints from cache next time.
     getBook().catch(() => {});
+    // Follow OS / WeChat dark-mode flips while the app is alive: without
+    // this, a user who switches mid-read keeps the old theme until the
+    // next page load. Pages implement applyThemeRefresh() to repaint.
+    wx.onThemeChange(() => {
+      for (const page of getCurrentPages()) {
+        if (typeof page.applyThemeRefresh === "function") {
+          page.applyThemeRefresh();
+        }
+      }
+    });
   },
 
   /* Tsanger JinKai02 — the site's editorial serif, subset to ~0.5 MB per

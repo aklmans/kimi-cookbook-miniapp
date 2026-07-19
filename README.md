@@ -57,6 +57,9 @@ assets/moon-tile.png           月之暗面站标(与网页 favicon 同构图)
 - 章节载荷还带 `outline`(章内锚点)与 `references`(引文结构),大纲与
   脚注弹层依赖它们;旧缓存结构向后兼容。
 - 外部链接在小程序里点不开,阅读页统一「复制链接」。
+- 深色模式依赖 app.json `darkmode: true` —— 没有它,微信/开发者工具的深色
+  环境会把主题 API 误报为 light,应用把浅色配色画到系统深色页上(不可读)。
+  mp-html 只在 content 变化时重排,tagStyle 变更必须冲刷 content 才生效。
 - 内联 SVG 图(3 张概念图)当前降级为灰框提示「见网页版」,栅格化待定。
 
 ## Backlog

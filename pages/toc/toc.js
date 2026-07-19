@@ -20,8 +20,12 @@ Page({
   },
 
   onShow() {
-    applyTheme(this);
+    this.applyThemeRefresh();
     if (this.data.book) this.refreshRows();
+  },
+
+  applyThemeRefresh() {
+    applyTheme(this);
   },
 
   onShareAppMessage() {

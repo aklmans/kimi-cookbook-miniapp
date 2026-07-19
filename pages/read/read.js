@@ -41,9 +41,18 @@ Page({
       fontLarge: app().globalData.fontLarge,
       themeLabel: THEME_LABEL[app().globalData.themeMode],
     });
+    this.applyThemeRefresh();
+    this.loadChapter();
+  },
+
+  /** Single theme-refresh path — onLoad, manual toggle, and WeChat's
+      onThemeChange all land here. The reader's content styles derive
+      from the theme ALREADY APPLIED to the page (page.data.theme), never
+      from a second resolution, so the page chrome and the article body
+      can never disagree. */
+  applyThemeRefresh() {
     applyTheme(this);
     this.applyReaderStyle();
-    this.loadChapter();
   },
 
   onShareAppMessage() {
@@ -107,12 +116,21 @@ Page({
   },
 
   applyReaderStyle() {
-    const theme = app().resolveTheme();
+    const theme = this.data.theme || app().resolveTheme();
     const base = this.data.fontLarge ? 19 : 17;
     this.setData({
       tagStyle: readerTagStyle(theme, this.data.fontLarge),
       containerStyle: `font-size:${base}px;line-height:1.8;color:${theme === "dark" ? "#fafafa" : "#1a1a1a"};max-width:680px;margin:0 auto;`,
     });
+    // mp-html only re-parses when `content` changes — a tagStyle update
+    // alone leaves the already-baked node styles stale (the article would
+    // keep the old theme's colors). Flush the content so the new styles
+    // get baked in.
+    const html = this.data.html;
+    if (html) {
+      this.setData({ html: "" });
+      wx.nextTick(() => this.setData({ html }));
+    }
   },
 
   toggleFont() {
@@ -127,8 +145,7 @@ Page({
     app().cycleTheme();
     wx.vibrateShort({ type: "light" });
     this.setData({ themeLabel: THEME_LABEL[app().globalData.themeMode] });
-    applyTheme(this);
-    this.applyReaderStyle();
+    this.applyThemeRefresh();
   },
 
   openPrev() {

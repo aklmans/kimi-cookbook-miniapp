@@ -35,6 +35,13 @@ export function readerTagStyle(theme, fontLarge) {
   const mono = '"SF Mono",Menlo,Consolas,monospace';
   const h1 = Math.round(fontLarge ? 29 : 26);
   const h2 = Math.round(fontLarge ? 23 : 21);
+  /* Shiki dual-theme resolution: rehype-pretty-code emits each token span
+     with BOTH --shiki-light and --shiki-dark custom properties inline but
+     no color declaration (the web resolves them via globals.css Round-8).
+     Here the span rule picks the right var per theme — the vars resolve
+     locally on each span, so code keeps its Kimi-blue highlight in both
+     themes. Accent spans carry their own inline color and win over this. */
+  const shikiVar = dark ? "var(--shiki-dark)" : "var(--shiki-light)";
 
   return {
     h1: `font-family:${serif600};font-size:${h1}px;font-weight:600;line-height:1.35;margin:0 0 16px;color:${ink}`,
@@ -42,6 +49,7 @@ export function readerTagStyle(theme, fontLarge) {
     h3: `font-family:${serif600};font-size:${Math.round(h2 * 0.86)}px;font-weight:600;line-height:1.45;margin:32px 0 12px;color:${ink}`,
     h4: `font-family:${serif600};font-size:1em;font-weight:600;margin:24px 0 8px;color:${ink}`,
     p: `margin:0 0 20px;color:${ink}`,
+    span: `color:${shikiVar}`,
     small: `font-size:0.78em;color:${ink3}`,
     strong: `font-family:${serif600};font-weight:600;color:${ink}`,
     em: `font-style:normal;color:${ink2}`,

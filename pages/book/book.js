@@ -16,8 +16,12 @@ Page({
   },
 
   onShow() {
-    applyTheme(this);
+    this.applyThemeRefresh();
     this.refreshResume();
+  },
+
+  applyThemeRefresh() {
+    applyTheme(this);
   },
 
   onShareAppMessage() {

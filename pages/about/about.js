@@ -8,6 +8,10 @@ Page({
   },
 
   onShow() {
+    this.applyThemeRefresh();
+  },
+
+  applyThemeRefresh() {
     applyTheme(this);
   },
 

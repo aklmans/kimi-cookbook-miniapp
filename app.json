@@ -13,6 +13,7 @@
     "backgroundTextStyle": "dark",
     "enablePullDownRefresh": false
   },
+  "darkmode": true,
   "style": "v2",
   "sitemapLocation": "sitemap.json"
 }
