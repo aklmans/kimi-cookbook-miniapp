@@ -1,4 +1,7 @@
 <view class="page t-{{theme}}">
+  <!-- reading progress: ratio of scrolled length, measured on scroll -->
+  <view wx:if="{{loaded}}" class="progressbar" style="width: {{progress * 100}}%" />
+
   <!-- skeleton while the chapter is in flight (keyed on `loaded`, not
        `html`: theme/font flushes briefly empty `html` mid-read and must
        not flash the skeleton) -->
@@ -26,6 +29,8 @@
         container-style="{{containerStyle}}"
         tag-style="{{tagStyle}}"
         use-anchor="{{true}}"
+        scroll-table="{{true}}"
+        lazy-load="{{true}}"
         bindlinktap="onLinkTap"
         bindimgtap="onImgTap"
       />
@@ -80,8 +85,8 @@
         <view class="bar__label">上一章</view>
       </view>
       <view class="bar__item" bindtap="toggleFont">
-        <view class="bar__icon bar__icon--font">{{fontLarge ? 'A−' : 'A+'}}</view>
-        <view class="bar__label">字号</view>
+        <view class="bar__icon bar__icon--font">A</view>
+        <view class="bar__label">{{fontSize}}px</view>
       </view>
       <view class="bar__item" bindtap="toggleTheme">
         <view class="bar__icon">◐</view>

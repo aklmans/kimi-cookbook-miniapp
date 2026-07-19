@@ -5,6 +5,9 @@
 
 import { getBook } from "./utils/api";
 
+/* Reader body sizes (px) cycled by the read page's 字号 button. */
+const FONT_SIZES = [15, 17, 19, 21];
+
 App({
   globalData: {
     /** Production content API. For local development point this at the
@@ -13,14 +16,15 @@ App({
     baseUrl: "https://kimi.read.wiki",
     /** "system" | "light" | "dark" */
     themeMode: "system",
-    fontLarge: false,
+    /** Reader body size in px — one of FONT_SIZES. */
+    fontSize: 17,
     /** Tsanger JinKai (the site's editorial serif) finished downloading. */
     tsangerReady: false,
   },
 
   onLaunch() {
     this.globalData.themeMode = wx.getStorageSync("kc:theme") || "system";
-    this.globalData.fontLarge = Boolean(wx.getStorageSync("kc:font-large"));
+    this.globalData.fontSize = this.loadFontSize();
     this.loadTsanger();
     // Warm the book payload so the first page paints from cache next time.
     getBook().catch(() => {});
@@ -76,5 +80,22 @@ App({
     this.globalData.themeMode = order[this.globalData.themeMode] || "system";
     wx.setStorageSync("kc:theme", this.globalData.themeMode);
     return this.resolveTheme();
+  },
+
+  /** Persisted font size, migrating the old two-level "kc:font-large"
+      flag (true → 19) on first launch after the upgrade. */
+  loadFontSize() {
+    const saved = Number(wx.getStorageSync("kc:font-size"));
+    if (FONT_SIZES.includes(saved)) return saved;
+    return wx.getStorageSync("kc:font-large") ? 19 : 17;
+  },
+
+  /** Cycle 15 → 17 → 19 → 21 → 15, persist, and return the new size. */
+  cycleFontSize() {
+    const i = FONT_SIZES.indexOf(this.globalData.fontSize);
+    const next = i === -1 ? 17 : FONT_SIZES[(i + 1) % FONT_SIZES.length];
+    this.globalData.fontSize = next;
+    wx.setStorageSync("kc:font-size", next);
+    return next;
   },
 });

@@ -25,7 +25,7 @@ Page({
   data: {
     theme: "light",
     themeLabel: "跟随系统",
-    fontLarge: false,
+    fontSize: 17,
     chapter: null,
     /** Chapter payload rendered at least once — drives the skeleton, which
         must survive the brief html flushes of theme/font re-bakes. */
@@ -38,6 +38,7 @@ Page({
     prompts: [],
     error: "",
     barHidden: false,
+    progress: 0,
     /** "" | "outline" | "footnote" */
     panel: "",
     activeRef: null,
@@ -54,7 +55,7 @@ Page({
     this.slug = slug;
     this.restored = false;
     this.setData({
-      fontLarge: app().globalData.fontLarge,
+      fontSize: app().globalData.fontSize,
       themeLabel: THEME_LABEL[app().globalData.themeMode],
     });
     this.applyThemeRefresh();
@@ -99,6 +100,13 @@ Page({
     }
     this.lastScrollTop = e.scrollTop;
 
+    // Top progress bar — cheap ratio against the scroll length cached by
+    // the throttled saver below (no async query on the scroll hot path).
+    if (this.scrollMax > 0) {
+      const p = Math.min(1, e.scrollTop / this.scrollMax);
+      if (Math.abs(p - this.data.progress) > 0.003) this.setData({ progress: p });
+    }
+
     if (!this.restored) return;
     if (this.scrollTimer) return;
     this.scrollTimer = setTimeout(() => {
@@ -131,6 +139,9 @@ Page({
     const m = await this.measureScroll();
     if (!m) return;
     const max = m.pageH - m.winH;
+    // Refresh the progress bar's denominator too — lazy-loaded images grow
+    // the page while reading, so the length measured at load time goes stale.
+    this.scrollMax = max;
     saveProgress(this.slug, max > 0 ? Math.min(1, m.scrollTop / max) : 0);
   },
 
@@ -167,7 +178,8 @@ Page({
         if (progress && typeof progress.ratio === "number") {
           const m = await this.measureScroll();
           if (m) {
-            const target = Math.round(progress.ratio * (m.pageH - m.winH));
+            this.scrollMax = m.pageH - m.winH;
+            const target = Math.round(progress.ratio * this.scrollMax);
             if (target > 120) wx.pageScrollTo({ scrollTop: target, duration: 0 });
           }
         } else if (progress && progress.scrollTop > 120) {
@@ -183,9 +195,9 @@ Page({
 
   applyReaderStyle() {
     const theme = this.data.theme || app().resolveTheme();
-    const base = this.data.fontLarge ? 19 : 17;
+    const base = this.data.fontSize;
     this.setData({
-      tagStyle: readerTagStyle(theme, this.data.fontLarge),
+      tagStyle: readerTagStyle(theme, base),
       containerStyle: `font-size:${base}px;line-height:1.8;color:${theme === "dark" ? "#fafafa" : "#1a1a1a"};max-width:680px;margin:0 auto;`,
     });
     this.flushContent();
@@ -212,6 +224,7 @@ Page({
         if (ratio != null) {
           const after = await this.measureScroll();
           if (after) {
+            this.scrollMax = after.pageH - after.winH;
             wx.pageScrollTo({
               scrollTop: Math.round(ratio * (after.pageH - after.winH)),
               duration: 0,
@@ -224,10 +237,9 @@ Page({
   },
 
   toggleFont() {
-    app().globalData.fontLarge = !app().globalData.fontLarge;
-    wx.setStorageSync("kc:font-large", app().globalData.fontLarge);
+    const size = app().cycleFontSize();
     wx.vibrateShort({ type: "light" });
-    this.setData({ fontLarge: app().globalData.fontLarge });
+    this.setData({ fontSize: size });
     this.applyReaderStyle();
   },
 

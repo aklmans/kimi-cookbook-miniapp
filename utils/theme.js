@@ -23,7 +23,7 @@ export const THEME_LABEL = {
    can't reach inside it, so structure styles go through its `tag-style`
    prop (computed here per theme + font size), while accents ride as
    inline styles in the HTML itself (lib/mp-render.tsx). */
-export function readerTagStyle(theme, fontLarge) {
+export function readerTagStyle(theme, fontSize) {
   const dark = theme === "dark";
   const ink = dark ? "#fafafa" : "#1a1a1a";
   const ink2 = dark ? "#b8b8b8" : "#3a3a3a";
@@ -33,8 +33,11 @@ export function readerTagStyle(theme, fontLarge) {
   const serif = '"TsangerJinKai02-W04","Songti SC","STSong","Noto Serif SC",serif';
   const serif600 = '"TsangerJinKai02-W05","Songti SC","STSong","Noto Serif SC",serif';
   const mono = '"SF Mono",Menlo,Consolas,monospace';
-  const h1 = Math.round(fontLarge ? 29 : 26);
-  const h2 = Math.round(fontLarge ? 23 : 21);
+  /* Headings scale with the body size (base) instead of fixed two-level
+     values — 17px base reproduces the original 26/21 heading pair. */
+  const base = fontSize || 17;
+  const h1 = Math.round(base * 1.53);
+  const h2 = Math.round(base * 1.21);
   /* Shiki dual-theme resolution: rehype-pretty-code emits each token span
      with BOTH --shiki-light and --shiki-dark custom properties inline but
      no color declaration (the web resolves them via globals.css Round-8).

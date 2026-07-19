@@ -2,6 +2,17 @@
   padding: 32rpx 40rpx 48rpx;
 }
 
+/* ── top reading progress ── */
+.progressbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4rpx;
+  background: var(--accent);
+  z-index: 25;
+  transition: width 80ms linear;
+}
+
 .state {
   min-height: 60vh;
   display: flex;
