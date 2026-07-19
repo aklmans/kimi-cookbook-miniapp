@@ -31,6 +31,7 @@
         use-anchor="{{true}}"
         scroll-table="{{true}}"
         lazy-load="{{true}}"
+        selectable="force"
         bindlinktap="onLinkTap"
         bindimgtap="onImgTap"
       />
@@ -102,6 +103,13 @@
     class="returnchip t-{{theme}} {{barHidden ? 'returnchip--down' : ''}}"
     bindtap="backToRef"
   >↑ 返回引文处</view>
+
+  <!-- restore notice, one tap returns to the chapter's top -->
+  <view
+    wx:if="{{showRestoreTip}}"
+    class="restoretip t-{{theme}} {{barHidden ? 'restoretip--down' : ''}}"
+    bindtap="backToTop"
+  >已回到上次阅读位置 · <text class="restoretip__action">回开头 ↑</text></view>
 
   <!-- bottom bar (floating, icon + label) -->
   <view class="barwrap t-{{theme}}">

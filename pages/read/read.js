@@ -47,6 +47,8 @@ Page({
     activeOutlineId: "",
     /** Offer "back to the citation" after jumping to the references block. */
     showReturn: false,
+    /** One-shot notice after a progress restore — offers "back to top". */
+    showRestoreTip: false,
     /** Completion moment: last chapter reached its end with every chapter
         finished — swap the endcard for the book-completion card. */
     bookDone: false,
@@ -212,22 +214,47 @@ Page({
     const progress = getProgress(this.slug);
     wx.nextTick(() => {
       setTimeout(async () => {
+        let restoredTo = 0;
         if (progress && typeof progress.ratio === "number") {
           const m = await this.measureScroll();
           if (m) {
             this.scrollMax = m.pageH - m.winH;
             const target = Math.round(progress.ratio * this.scrollMax);
-            if (target > 120) wx.pageScrollTo({ scrollTop: target, duration: 0 });
+            if (target > 120) restoredTo = target;
           }
         } else if (progress && progress.scrollTop > 120) {
           /* Legacy absolute entry from before ratio-based progress. */
-          wx.pageScrollTo({ scrollTop: progress.scrollTop, duration: 0 });
+          restoredTo = progress.scrollTop;
+        }
+        if (restoredTo) {
+          wx.pageScrollTo({ scrollTop: restoredTo, duration: 0 });
+          this.showRestoreTip();
         }
         // Gate saving until the restored position (or the top) has been
         // applied, so onPageScroll doesn't immediately overwrite it.
         this.restored = true;
       }, 350);
     });
+  },
+
+  /* Tell the reader a restore just happened (otherwise the mid-chapter
+     landing reads as a bug), with a one-tap way back to the top. */
+  showRestoreTip() {
+    this.setData({ showRestoreTip: true });
+    if (this.restoreTipTimer) clearTimeout(this.restoreTipTimer);
+    this.restoreTipTimer = setTimeout(() => {
+      this.restoreTipTimer = null;
+      this.setData({ showRestoreTip: false });
+    }, 4000);
+  },
+
+  backToTop() {
+    if (this.restoreTipTimer) {
+      clearTimeout(this.restoreTipTimer);
+      this.restoreTipTimer = null;
+    }
+    this.setData({ showRestoreTip: false });
+    wx.pageScrollTo({ scrollTop: 0, duration: 300 });
   },
 
   applyReaderStyle() {

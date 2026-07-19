@@ -160,8 +160,10 @@
   bottom: 48rpx;
 }
 
-/* back-to-citation chip (left-side counterpart of the outline FAB) */
-.returnchip {
+/* back-to-citation chip / restore notice (left-side counterpart of the
+   outline FAB) */
+.returnchip,
+.restoretip {
   position: fixed;
   left: 32rpx;
   bottom: 216rpx;
@@ -177,8 +179,13 @@
   transition: bottom 240ms ease;
 }
 
-.returnchip--down {
+.returnchip--down,
+.restoretip--down {
   bottom: 48rpx;
+}
+
+.restoretip__action {
+  color: var(--accent);
 }
 
 /* ── floating bottom bar: icon + label ── */
