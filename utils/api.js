@@ -77,6 +77,17 @@ export function getChapter(slug, onFresh) {
   return swr(`kc:cache:ch:${slug}`, `/api/mp/v1/chapters/${slug}`, onFresh);
 }
 
+/** Map a request failure to reader-facing guidance. The WeChat domain
+    whitelist error is the common one on real devices — say so plainly
+    instead of a generic "check your network". */
+export function explainError(err) {
+  const msg = ((err && err.message) || "").toLowerCase();
+  if (msg.includes("domain list")) {
+    return "接口域名未加入白名单\n在小程序后台「开发管理 → 服务器域名」把 kimi.read.wiki 加入 request 合法域名;或在真机预览里开启「调试模式」。";
+  }
+  return "加载失败,请检查网络后重试";
+}
+
 export function getVersion() {
   return cached("kc:cache:version", "/api/mp/v1/version", 60 * 1000);
 }

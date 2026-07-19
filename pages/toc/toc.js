@@ -1,4 +1,4 @@
-import { getBook, isVisited } from "../../utils/api";
+import { getBook, isVisited, explainError } from "../../utils/api";
 import { applyTheme } from "../../utils/theme";
 
 Page({
@@ -38,6 +38,10 @@ Page({
       visited: isVisited(c.slug),
     }));
     this.setData({ rows });
+  },
+
+  goHome() {
+    wx.reLaunch({ url: "/pages/book/book" });
   },
 
   openChapter(e) {

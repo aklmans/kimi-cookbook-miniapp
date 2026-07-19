@@ -15,6 +15,9 @@
 .state__text {
   color: var(--ink-3);
   font-size: 28rpx;
+  white-space: pre-wrap;
+  text-align: center;
+  line-height: 1.7;
 }
 
 /* skeleton */
@@ -68,9 +71,9 @@
   width: 100%;
   justify-content: flex-start;
   font-size: 15px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  text-align: left;
+  line-height: 1.5;
 }
 
 .endcard__row {

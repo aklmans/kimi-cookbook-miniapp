@@ -2,6 +2,19 @@
   padding: 48rpx 48rpx 40rpx;
 }
 
+.toc-head__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.toc-head__home {
+  font-size: 22rpx;
+  letter-spacing: 4rpx;
+  color: var(--ink-3);
+  padding: 8rpx 0;
+}
+
 .toc-head__title {
   font-size: 56rpx;
   font-weight: 600;
@@ -78,6 +91,9 @@
 .state__text {
   color: var(--ink-3);
   font-size: 28rpx;
+  white-space: pre-wrap;
+  text-align: center;
+  line-height: 1.7;
 }
 
 /* skeleton rows */

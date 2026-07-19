@@ -1,6 +1,9 @@
 <view class="page t-{{theme}}">
   <view class="toc-head">
-    <view class="eyebrow">— 目录</view>
+    <view class="toc-head__row">
+      <view class="eyebrow">— 目录</view>
+      <view class="toc-head__home mono" bindtap="goHome">首页 →</view>
+    </view>
     <view class="toc-head__title">目录<text class="toc-head__stop">.</text></view>
     <view wx:if="{{book}}" class="toc-head__meta eyebrow">{{book.chapters.length}} 章 · {{book.readMinutes}} 分钟</view>
   </view>

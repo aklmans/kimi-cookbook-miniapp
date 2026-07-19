@@ -72,6 +72,7 @@
       {{themeLabel}}
     </view>
     <view class="bottombar__item" bindtap="openToc">目录</view>
+    <view class="bottombar__item" bindtap="goHome">首页</view>
     <view class="bottombar__item {{!chapter || !chapter.next ? 'is-disabled' : ''}}" bindtap="openNext">
       下一章 →
     </view>

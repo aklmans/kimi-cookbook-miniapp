@@ -4,6 +4,7 @@ import {
   saveProgress,
   getProgress,
   prefetchChapter,
+  explainError,
 } from "../../utils/api";
 import { applyTheme, readerTagStyle, THEME_LABEL } from "../../utils/theme";
 
@@ -160,6 +161,10 @@ Page({
     if (next) {
       wx.redirectTo({ url: `/pages/read/read?slug=${next.slug}` });
     }
+  },
+
+  goHome() {
+    wx.reLaunch({ url: "/pages/book/book" });
   },
 
   openToc() {

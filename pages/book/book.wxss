@@ -116,6 +116,9 @@
 .state__text {
   color: var(--ink-3);
   font-size: 28rpx;
+  white-space: pre-wrap;
+  text-align: center;
+  line-height: 1.7;
 }
 
 /* skeleton */
