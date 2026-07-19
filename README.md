@@ -25,7 +25,8 @@ pages/read/                    阅读器(mp-html + Tsanger 排版)
                                · 按比例位置记忆(恢复后浮条可一键回开头)
                                · 弹层下滑关闭、图片多图滑动、长按选中复制(selectable=force)
                                · 代码块全宽出血、词边界断行(overflow-wrap)
-pages/about/                   关于本书(作者、授权、网页版)
+pages/about/                   关于本书(数据驱动:book 载荷 about 字段,
+                               内置文案兜底)
 components/mp-html/            富文本渲染器(vendored mp-html v2.5.2,
                                dist/mp-weixin,免 npm 构建)
 utils/api.js                   内容 API 客户端(SWR 缓存 1h)+ 阅读状态 + 预取
@@ -72,6 +73,11 @@ assets/moon-tile.png           月之暗面站标(与网页 favicon 同构图)
 - 引用列表 `<li>` 刻意不带 id:mp-html 对 `#` 链接在 linktap 之外还会
   自动滚动(目标存在才滚),`#fn-N` 只是弹层触发标识被解析,绝不能有
   命中元素——否则点脚注会把页面强制甩到文末。
+- 关于页内容来自 `/api/mp/v1/book` 的可选 `about` 字段:`lede` / `bookline`
+  / `intro` / `meta[{label,value}]` / `sections[{no,title,paragraphs?|ways?,
+  license?,contacts?}]` / `kicker`,纯文本不含 HTML,各数组数量不限,
+  节标题不带句点(小程序自补 accent 点);字段缺失或 `sections` 为空时
+  回退 `pages/about/about.js` 内置文案,服务端随时上下线,无需发版。
 - 外部链接在小程序里点不开,阅读页统一「复制链接」。
 - 深色模式依赖 app.json `darkmode: true` —— 没有它,微信/开发者工具的深色
   环境会把主题 API 误报为 light,应用把浅色配色画到系统深色页上(不可读)。

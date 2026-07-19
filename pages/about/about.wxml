@@ -4,47 +4,43 @@
 
     <view class="eyebrow">— 关于本书</view>
     <view class="about__title">关于本书<text class="about__stop">.</text></view>
-    <view class="about__lede">一本讲透 Kimi 的书, 和一个写字的人。</view>
+    <view class="about__lede">{{about.lede}}</view>
+    <view class="about__bookline mono">{{about.bookline}}</view>
 
-    <view class="about__section">
-      <view class="about__p">
-        很多人对 Kimi 的印象还停在「长文本」那一年。到 K3, 它长成一套对标
-        OpenAI / Anthropic 的 agent 栈: 四模式、做出成品的 Agent、上百子
-        agent 的 Swarm、Deep Research、跑在终端的 Kimi Code, 和一套双兼容的
-        API。这本书给这套栈画张图: 每块产品干什么、买哪档够用、什么时候回
-        frontier。
+    <view class="about__p about__intro">{{about.intro}}</view>
+
+    <!-- meta grid -->
+    <view class="about__meta hairline">
+      <view wx:for="{{about.meta}}" wx:key="label" class="about__meta-row">
+        <view class="about__meta-label eyebrow">{{item.label}}</view>
+        <view class="about__meta-value">{{item.value}}</view>
       </view>
     </view>
 
-    <view class="about__section hairline">
-      <view class="about__label eyebrow">作者</view>
-      <view class="about__p">
-        本书由 Zhapar 撰写与维护。写代码, 也写字, 长期关心的是工具怎样进入
-        真实工作, 而不是发布当天的漂亮话。
+    <view wx:for="{{about.sections}}" wx:key="no" class="about__section hairline">
+      <view class="about__no eyebrow">— {{item.no}}</view>
+      <view class="about__h serif-600">{{item.title}}<text class="about__stop">.</text></view>
+
+      <view wx:for="{{item.paragraphs}}" wx:for-item="para" wx:key="*this" class="about__p">{{para}}</view>
+
+      <view wx:for="{{item.ways}}" wx:for-item="way" wx:key="label" class="about__way">
+        <view class="about__way-label serif-600">{{way.label}}</view>
+        <view class="about__p">{{way.text}}</view>
+        <view wx:if="{{way.action && way.action.kind === 'toc'}}" class="about__link" bindtap="openToc">{{way.action.label}}</view>
+        <view wx:elif="{{way.action && way.action.kind === 'copy'}}" class="about__link" bindtap="copy" data-text="{{way.action.value}}" data-toast="{{way.action.toast}}">{{way.action.label}}</view>
       </view>
-      <view class="about__link" bindtap="copy" data-text="hi@zhaphar.com" data-label="邮箱">
-        hi@zhaphar.com
+
+      <view wx:if="{{item.license}}" class="about__p about__license">{{item.license}}</view>
+
+      <view wx:if="{{item.contacts}}" class="about__contacts">
+        <view wx:for="{{item.contacts}}" wx:for-item="c" wx:key="label" class="about__meta-row">
+          <view class="about__meta-label eyebrow">{{c.label}}</view>
+          <view class="about__link" bindtap="copy" data-text="{{c.value}}" data-toast="{{c.toast}}">{{c.text}}</view>
+        </view>
       </view>
     </view>
 
-    <view class="about__section hairline">
-      <view class="about__label eyebrow">授权</view>
-      <view class="about__p">
-        本书内容遵循 CC BY-NC-ND 4.0: 允许免费阅读、AI 摘读、引用与转发,
-        须保留作者署名 (Zhapar) 与原文链接; 禁止商业再发布与衍生改写。
-      </view>
-    </view>
-
-    <view class="about__section hairline">
-      <view class="about__label eyebrow">网页版</view>
-      <view class="about__p">
-        本小程序是阅读端; 评论区、PDF 下载、AI 可读版 (llms.md) 都在网页版。
-      </view>
-      <view class="about__link" bindtap="copy" data-text="https://kimi.read.wiki" data-label="网址">
-        kimi.read.wiki
-      </view>
-    </view>
-
+    <view wx:if="{{about.kicker}}" class="about__kicker serif-600">{{about.kicker}}<text class="about__stop">.</text></view>
     <view class="about__footer mono">KIMI COOKBOOK · NO. 01</view>
   </view>
 </view>
