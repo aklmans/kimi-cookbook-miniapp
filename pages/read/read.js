@@ -1,4 +1,5 @@
 import {
+  getBook,
   getChapter,
   markVisited,
   saveProgress,
@@ -6,6 +7,8 @@ import {
   prefetchChapter,
   explainError,
 } from "../../utils/api";
+import { copyText } from "../../utils/clipboard";
+import { makeChapterPoster } from "../../utils/poster";
 import { applyTheme, readerTagStyle, THEME_LABEL } from "../../utils/theme";
 
 /* Resolved lazily per call — getApp() at module top level can precede
@@ -23,6 +26,7 @@ Page({
     containerStyle: "",
     outline: [],
     references: [],
+    prompts: [],
     error: "",
     barHidden: false,
     /** "" | "outline" | "footnote" */
@@ -65,6 +69,14 @@ Page({
     };
   },
 
+  onShareTimeline() {
+    const ch = this.data.chapter;
+    return {
+      title: ch ? `${ch.title} · Kimi Cookbook` : "Kimi Cookbook",
+      query: `slug=${this.slug}`,
+    };
+  },
+
   onPageScroll(e) {
     // Immersive chrome: the bottom bar hides scrolling down, returns
     // scrolling up.
@@ -94,6 +106,7 @@ Page({
           html: chapter.html,
           outline: chapter.outline || [],
           references: chapter.references || [],
+          prompts: chapter.prompts || [],
         });
         wx.setNavigationBarTitle({ title: chapter.title.split(" · ")[0] });
         this.restoreScroll();
@@ -149,6 +162,52 @@ Page({
     this.applyThemeRefresh();
   },
 
+  openShare() {
+    this.setData({ panel: "share" });
+  },
+
+  async makePoster() {
+    this.setData({ panel: "" });
+    const ch = this.data.chapter;
+    if (!ch) return;
+    wx.showLoading({ title: "正在画海报", mask: true });
+    try {
+      let lede = "";
+      try {
+        const book = await getBook();
+        const row = (book.chapters || []).find((c) => c.slug === this.slug);
+        lede = (row && row.lede) || "";
+      } catch (e) {
+        /* lede is optional */
+      }
+      const ord = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十"][
+        Number(ch.number) - 1
+      ];
+      await makeChapterPoster(this, {
+        number: `${ch.number} · 第${ord}章`,
+        title: ch.title,
+        lede,
+      });
+    } catch (e) {
+      wx.showToast({ title: "海报生成失败", icon: "none" });
+    } finally {
+      wx.hideLoading();
+    }
+  },
+
+  shareToAI() {
+    this.setData({ panel: "" });
+    copyText(
+      "请帮我阅读 Zhapar 写的这本关于 Kimi 的书, 按需为我总结要点、回答具体问题、做读书笔记。引用时请保留作者署名和章节链接。\n\n完整 markdown: https://kimi.read.wiki/books/kimi/llms.md\n书的网页版 (含评论): https://kimi.read.wiki/books/kimi",
+      "已复制,粘贴给 AI 即可",
+    );
+  },
+
+  copyChapterLink() {
+    this.setData({ panel: "" });
+    copyText(`https://kimi.read.wiki/books/kimi/${this.slug}`, "链接已复制");
+  },
+
   openPrev() {
     const prev = this.data.chapter && this.data.chapter.prev;
     if (prev) {
@@ -202,6 +261,17 @@ Page({
   onLinkTap(e) {
     const href = e.detail && e.detail.href;
     if (!href) return;
+    if (href.startsWith("#kc-prompt-")) {
+      const id = Number(href.slice("#kc-prompt-".length));
+      const prompt = (this.data.prompts || []).find((p) => p.id === id);
+      if (prompt) {
+        const text = prompt.example
+          ? `${prompt.template}\n\n—— 示例 ——\n\n${prompt.example}`
+          : prompt.template;
+        copyText(text, "提示词已复制");
+      }
+      return;
+    }
     if (href.startsWith("#fn-")) {
       const id = Number(href.slice(4));
       const ref = (this.data.references || []).find((r) => r.id === id);
@@ -216,24 +286,12 @@ Page({
         .catch(() => {});
       return;
     }
-    wx.setClipboardData({
-      data: href,
-      success() {
-        wx.showToast({ title: "链接已复制", icon: "none" });
-      },
-    });
+    copyText(href, "链接已复制");
   },
 
   copyRefLink() {
     const ref = this.data.activeRef;
-    if (ref && ref.url) {
-      wx.setClipboardData({
-        data: ref.url,
-        success() {
-          wx.showToast({ title: "链接已复制", icon: "none" });
-        },
-      });
-    }
+    if (ref && ref.url) copyText(ref.url, "链接已复制");
   },
 
   onImgTap(e) {

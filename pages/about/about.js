@@ -19,6 +19,10 @@ Page({
     return { title: "关于本书 · Kimi Cookbook", path: "/pages/about/about" };
   },
 
+  onShareTimeline() {
+    return { title: "关于本书 · Kimi Cookbook", query: "" };
+  },
+
   copy(e) {
     const { text, label } = e.currentTarget.dataset;
     wx.setClipboardData({

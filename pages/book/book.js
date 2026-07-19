@@ -33,6 +33,14 @@ Page({
     };
   },
 
+  onShareTimeline() {
+    const book = this.data.book;
+    return {
+      title: book ? `${book.title} · Zhapar` : "Kimi Cookbook",
+      query: "",
+    };
+  },
+
   loadBook() {
     this.setData({ error: "" });
     getBook((fresh) => {

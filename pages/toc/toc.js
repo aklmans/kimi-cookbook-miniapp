@@ -32,6 +32,10 @@ Page({
     return { title: "目录 · Kimi Cookbook", path: "/pages/toc/toc" };
   },
 
+  onShareTimeline() {
+    return { title: "目录 · Kimi Cookbook", query: "" };
+  },
+
   refreshRows() {
     const rows = this.data.book.chapters.map((c) => ({
       ...c,

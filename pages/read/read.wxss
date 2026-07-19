@@ -67,13 +67,14 @@
   margin-bottom: 32rpx;
 }
 
+/* 100% width, single line, arrows outside the text run */
 .endcard__nav {
   width: 100%;
   justify-content: flex-start;
   font-size: 15px;
-  white-space: normal;
-  text-align: left;
-  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .endcard__row {
@@ -95,15 +96,20 @@
   line-height: 1.6;
 }
 
-.endcard__share::after {
-  border: none;
+/* ── off-screen poster canvas ── */
+.offscreen-poster {
+  position: fixed;
+  left: -20000rpx;
+  top: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* ── outline FAB ── */
 .fab {
   position: fixed;
   right: 32rpx;
-  bottom: 150rpx;
+  bottom: 216rpx;
   width: 72rpx;
   height: 72rpx;
   display: flex;
@@ -123,42 +129,85 @@
   bottom: 48rpx;
 }
 
-/* ── immersive bottom bar ── */
-.bottombar {
+/* ── floating bottom bar: icon + label ── */
+.barwrap {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
+  padding: 0 24rpx calc(16rpx + env(safe-area-inset-bottom));
+  z-index: 10;
+}
+
+.bar {
   display: flex;
-  border-top: 1rpx solid var(--border);
+  border: 1rpx solid var(--border);
   background: var(--bg-bar);
   backdrop-filter: blur(14px);
-  padding-bottom: env(safe-area-inset-bottom);
-  z-index: 10;
+  padding: 14rpx 0 12rpx;
   transform: translateY(0);
   transition: transform 240ms ease;
 }
 
-.bottombar.is-hidden {
-  transform: translateY(100%);
+.bar.is-hidden {
+  transform: translateY(calc(100% + 40rpx));
 }
 
-.bottombar__item {
+.bar__item {
   flex: 1;
-  text-align: center;
-  padding: 22rpx 0;
-  font-size: 26rpx;
-  color: var(--ink-2);
-  font-family: "SF Mono", Menlo, Consolas, monospace;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
 }
 
-.bottombar__item.is-disabled {
+.bar__icon {
+  font-size: 32rpx;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.bar__icon--font {
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.bar__label {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 18rpx;
+  letter-spacing: 2rpx;
   color: var(--ink-3);
-  opacity: 0.5;
+}
+
+.bar__item.is-disabled {
+  opacity: 0.35;
 }
 
 .bottombar__space {
-  height: 110rpx;
+  height: 140rpx;
+}
+
+/* ── share sheet ── */
+.share-actions {
+  padding: 16rpx 32rpx 32rpx;
+}
+
+.share-actions__main {
+  width: 100%;
+  margin-bottom: 28rpx;
+}
+
+.share-actions__row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 8rpx;
+  margin-bottom: 20rpx;
+}
+
+.share-actions__hint {
+  font-size: 22rpx;
+  line-height: 1.6;
+  color: var(--ink-3);
 }
 
 /* ── bottom sheet ── */
