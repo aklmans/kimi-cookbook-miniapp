@@ -422,21 +422,33 @@ Page({
 
   jumpToRefs() {
     this.setData({ panel: "" });
-    // Remember where the citation was so the reader can jump back after
-    // browsing the references block at the chapter's end.
+    /* The return target is the in-text marker's ANCHOR (fnref-<id>, site
+       contract since 2026-07), not a recorded scroll offset — offsets get
+       polluted by in-flight anchor-jump animations and lazy-load image
+       growth, which is how the chip used to land back inside the refs
+       block. The offset stays as the fallback for legacy cached HTML
+       without fnref ids. */
+    const ref = this.data.activeRef;
+    this.returnAnchor = ref ? `fnref-${ref.id}` : "";
     this.returnTo = this.lastScrollTop || 0;
     this.selectComponent("#mp-html")
       .navigateTo("kc-refs")
       .then(() => {
-        if (this.returnTo > 160) this.setData({ showReturn: true });
+        if (this.returnAnchor || this.returnTo > 160) {
+          this.setData({ showReturn: true });
+        }
       })
       .catch(() => {});
   },
 
   backToRef() {
-    const top = this.returnTo || 0;
     this.setData({ showReturn: false });
-    wx.pageScrollTo({ scrollTop: top, duration: 300 });
+    const fallback = () =>
+      wx.pageScrollTo({ scrollTop: this.returnTo || 0, duration: 300 });
+    if (!this.returnAnchor) return fallback();
+    this.selectComponent("#mp-html")
+      .navigateTo(this.returnAnchor)
+      .catch(fallback); // legacy cached chapter without fnref anchors
   },
 
   /** Links: footnote anchors open the reference sheet, other internal
