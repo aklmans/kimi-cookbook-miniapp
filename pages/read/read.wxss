@@ -92,8 +92,7 @@
 
 .endcard__row {
   display: flex;
-  justify-content: center;
-  gap: 64rpx;
+  gap: 24rpx;
   padding: 16rpx 0 8rpx;
 }
 
@@ -115,16 +114,19 @@
   margin-bottom: 40rpx;
 }
 
-.endcard__link {
-  font-size: 26rpx;
-  color: var(--ink-3);
-  text-decoration: underline;
-  text-decoration-color: var(--accent);
-  text-underline-offset: 6rpx;
-  background: none;
-  border: none;
-  padding: 0;
-  line-height: 1.6;
+/* secondary endcard actions as full-width bordered boxes (was underlined
+   text links) — friendlier hit targets */
+.endcard__box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 88rpx;
+  padding: 24rpx 0;
+  border: 1rpx solid var(--border);
+  color: var(--accent);
+  font-size: 28rpx;
 }
 
 /* ── off-screen poster canvas ── */
@@ -246,56 +248,103 @@
   height: 140rpx;
 }
 
-/* ── share sheet ── */
-.share-actions {
-  padding: 16rpx 32rpx 32rpx;
+/* ── share sheet: friend / AI tabs ── */
+.sharetab {
+  display: flex;
+  gap: 56rpx;
+  padding: 4rpx 32rpx 0;
 }
 
-.share-actions__main {
+.sharetab__item {
+  font-size: 32rpx;
+  color: var(--ink-3);
+  padding: 16rpx 0 14rpx;
+  border-bottom: 2rpx solid transparent;
+}
+
+.sharetab__item.is-active {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+
+.share__friend {
+  padding: 0 32rpx 32rpx;
+}
+
+.share__posterframe {
+  height: 44vh;
+  border: 1rpx solid var(--border);
+  margin: 28rpx 0 20rpx;
+}
+
+.share__poster {
+  display: block;
   width: 100%;
+}
+
+.share__poster-state {
+  padding: 120rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--ink-3);
+}
+
+.share__hint {
+  text-align: center;
   margin-bottom: 28rpx;
 }
 
-.share-actions__row {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 8rpx;
+.share__main {
+  width: 100%;
   margin-bottom: 20rpx;
+}
+
+.share__ai {
+  padding: 0 32rpx 32rpx;
+}
+
+.share__prompt {
+  max-height: 320rpx;
+  overflow-y: auto;
+  border: 1rpx solid var(--border);
+  padding: 24rpx;
+  font-size: 26rpx;
+  line-height: 1.7;
+  color: var(--ink-2);
+  white-space: pre-wrap;
+  margin: 28rpx 0 20rpx;
+}
+
+.share__btnrow {
+  display: flex;
+  gap: 20rpx;
+}
+
+.share__boxbtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 88rpx;
+  padding: 22rpx 0;
+  border: 1rpx solid var(--border);
+  color: var(--accent);
+  font-size: 26rpx;
+}
+
+.share__boxbtn--accent {
+  border-color: var(--accent);
+}
+
+.share__boxbtn.is-disabled {
+  opacity: 0.35;
 }
 
 .share-actions__hint {
   font-size: 22rpx;
   line-height: 1.6;
   color: var(--ink-3);
-}
-
-/* ── AI prompt preview (share sheet) ── */
-.ai-prompt {
-  margin-top: 8rpx;
-  padding-top: 20rpx;
-}
-
-.ai-prompt__label {
-  margin-bottom: 14rpx;
-}
-
-.ai-prompt__text {
-  max-height: 320rpx;
-  overflow-y: auto;
-  background: var(--code-bg);
-  padding: 20rpx 24rpx;
-  font-size: 26rpx;
-  line-height: 1.7;
-  color: var(--ink-2);
-  margin-bottom: 20rpx;
-  white-space: pre-wrap;
-}
-
-.ai-prompt__row {
-  justify-content: flex-start;
-  gap: 48rpx;
-  padding: 0;
-  margin-bottom: 16rpx;
 }
 
 /* ── bottom sheet ── */
@@ -330,6 +379,11 @@
 
 .sheet.is-open {
   transform: translateY(0);
+}
+
+/* the share sheet runs taller: fixed poster frame + visible buttons */
+.sheet--tall {
+  max-height: 86vh;
 }
 
 /* swipe-down grab strip at the sheet's top edge */
@@ -414,4 +468,63 @@
   text-decoration: underline;
   text-decoration-color: var(--accent);
   text-underline-offset: 6rpx;
+}
+
+/* ── reader settings sheet ── */
+.settings {
+  padding: 8rpx 32rpx 40rpx;
+}
+
+.settings__section + .settings__section {
+  margin-top: 36rpx;
+}
+
+.settings__label {
+  margin-bottom: 20rpx;
+}
+
+.settings__row {
+  display: flex;
+  gap: 20rpx;
+}
+
+.setopt {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10rpx;
+  min-height: 112rpx;
+  padding: 20rpx 0 14rpx;
+  border: 1rpx solid var(--border);
+  color: var(--ink-2);
+  box-sizing: border-box;
+}
+
+.setopt.is-active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.setopt__glyph {
+  line-height: 1.3;
+}
+
+.setopt__num {
+  font-size: 20rpx;
+  color: var(--ink-3);
+}
+
+.setopt.is-active .setopt__num {
+  color: var(--accent);
+}
+
+.setopt__icon {
+  font-size: 34rpx;
+  line-height: 1;
+}
+
+.setopt__name {
+  font-size: 24rpx;
 }

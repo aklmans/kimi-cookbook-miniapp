@@ -36,6 +36,7 @@
       <view class="stat">
         <view class="stat__label eyebrow">章节</view>
         <view class="stat__value serif-600">{{book.chapters.length}}</view>
+        <view class="stat__desc">约 {{book.readMinutes}} 分钟</view>
       </view>
       <view class="stat">
         <view class="stat__label eyebrow">更新</view>
@@ -44,6 +45,7 @@
       <view class="stat">
         <view class="stat__label eyebrow">作者</view>
         <view class="stat__value serif-600">{{book.author}}</view>
+        <view class="stat__desc">写代码,也写字</view>
       </view>
     </view>
 
@@ -51,8 +53,10 @@
       <button class="btn btn--primary hero__cta" hover-class="btn--hover" bindtap="startReading">{{resumeLabel}}</button>
       <button class="btn" hover-class="btn--hover" bindtap="openToc">目录</button>
     </view>
-    <view wx:if="{{readCount > 0}}" class="hero__progress mono">已读 {{readCount}} / {{book.chapters.length}}</view>
 
-    <view class="hero__about" bindtap="openAbout">关于本书 · 授权 →</view>
+    <view class="hero__foot">
+      <view wx:if="{{readCount > 0}}" class="hero__progress mono">已读 {{readCount}} / {{book.chapters.length}}</view>
+      <view class="hero__about" bindtap="openAbout">关于本书 →</view>
+    </view>
   </view>
 </view>

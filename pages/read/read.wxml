@@ -31,6 +31,7 @@
         use-anchor="{{true}}"
         scroll-table="{{true}}"
         lazy-load="{{true}}"
+        loading-img="/assets/loading-img.png"
         selectable="force"
         bindlinktap="onLinkTap"
         bindimgtap="onImgTap"
@@ -52,8 +53,8 @@
         >回到书页</button>
       </view>
       <view class="endcard__row">
-        <view class="endcard__link" bindtap="copyBookLink">复制全书链接</view>
-        <view class="endcard__link" bindtap="shareBookToAI">给 AI 的全书提示词</view>
+        <view class="endcard__box" bindtap="copyBookLink">复制全书链接</view>
+        <view class="endcard__box" bindtap="shareBookToAI">给 AI 的全书提示词</view>
       </view>
     </view>
 
@@ -76,8 +77,8 @@
         >{{chapter.next.title}} →</button>
       </view>
       <view class="endcard__row">
-        <view class="endcard__link" bindtap="openToc">全部目录</view>
-        <view class="endcard__link" bindtap="openShare">分享本章</view>
+        <view class="endcard__box" bindtap="openToc">全部目录</view>
+        <view class="endcard__box" bindtap="openShare">分享本章</view>
       </view>
     </view>
   </block>
@@ -118,13 +119,9 @@
         <view class="bar__icon">←</view>
         <view class="bar__label">上一章</view>
       </view>
-      <view class="bar__item" bindtap="toggleFont">
-        <view class="bar__icon bar__icon--font">A</view>
-        <view class="bar__label">{{fontSize}}px</view>
-      </view>
-      <view class="bar__item" bindtap="toggleTheme">
-        <view class="bar__icon">{{themeIcon}}</view>
-        <view class="bar__label">{{themeLabel}}</view>
+      <view class="bar__item" bindtap="openSettings">
+        <view class="bar__icon bar__icon--font">Aa</view>
+        <view class="bar__label">设置</view>
       </view>
       <view class="bar__item" bindtap="openToc">
         <view class="bar__icon">≡</view>
@@ -144,7 +141,7 @@
 
   <!-- bottom sheet: outline / footnote -->
   <view wx:if="{{panel}}" class="sheet-mask" bindtap="closePanel" />
-  <view class="sheet t-{{theme}} {{panel ? 'is-open' : ''}}">
+  <view class="sheet t-{{theme}} {{panel ? 'is-open' : ''}} {{panel === 'share' ? 'sheet--tall' : ''}}">
     <!-- swipe-down grab strip (sheet__head below is swipeable too) -->
     <view class="sheet__grab" bindtouchstart="sheetTouchStart" bindtouchend="sheetTouchEnd" />
     <block wx:if="{{panel === 'outline'}}">
@@ -176,32 +173,82 @@
       </view>
     </block>
 
+    <block wx:if="{{panel === 'settings'}}">
+      <view class="sheet__head hairline" bindtouchstart="sheetTouchStart" bindtouchend="sheetTouchEnd">
+        <view class="sheet__title eyebrow">— 阅读设置</view>
+        <view class="sheet__close" bindtap="closePanel">×</view>
+      </view>
+      <view class="settings">
+        <view class="settings__section">
+          <view class="settings__label eyebrow">字号</view>
+          <view class="settings__row">
+            <view
+              wx:for="{{fontSizes}}"
+              wx:key="*this"
+              class="setopt {{fontSize === item ? 'is-active' : ''}}"
+              data-size="{{item}}"
+              bindtap="chooseFontSize"
+            >
+              <view class="setopt__glyph serif-600" style="font-size: {{item}}px">字</view>
+              <view class="setopt__num mono">{{item}}</view>
+            </view>
+          </view>
+        </view>
+        <view class="settings__section">
+          <view class="settings__label eyebrow">主题</view>
+          <view class="settings__row">
+            <view
+              wx:for="{{themeModes}}"
+              wx:key="mode"
+              class="setopt {{themeMode === item.mode ? 'is-active' : ''}}"
+              data-mode="{{item.mode}}"
+              bindtap="chooseThemeMode"
+            >
+              <view class="setopt__icon">{{item.icon}}</view>
+              <view class="setopt__name">{{item.label}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+
     <block wx:if="{{panel === 'share'}}">
       <view class="sheet__head hairline" bindtouchstart="sheetTouchStart" bindtouchend="sheetTouchEnd">
         <view class="sheet__title eyebrow">— 分享本章</view>
         <view class="sheet__close" bindtap="closePanel">×</view>
       </view>
-      <view class="share-actions">
-        <button class="btn btn--primary share-actions__main" open-type="share" hover-class="btn--hover">发送给朋友</button>
-        <view class="share-actions__row">
-          <view class="sheet__action" bindtap="makePoster">生成海报图</view>
-          <view class="sheet__action" bindtap="shareToAI">分享给 AI</view>
-          <view class="sheet__action" bindtap="copyChapterLink">复制链接</view>
+
+      <!-- friend / AI tabs -->
+      <view class="sharetab">
+        <view class="sharetab__item serif-600 {{shareTab === 'friend' ? 'is-active' : ''}}" data-tab="friend" bindtap="setShareTab">分享给朋友</view>
+        <view class="sharetab__item serif-600 {{shareTab === 'ai' ? 'is-active' : ''}}" data-tab="ai" bindtap="setShareTab">分享给 AI</view>
+      </view>
+
+      <!-- friend: poster scrolls INSIDE a fixed frame so the buttons stay -->
+      <view wx:if="{{shareTab === 'friend'}}" class="share__friend">
+        <scroll-view scroll-y class="share__posterframe">
+          <image wx:if="{{posterPath}}" class="share__poster" src="{{posterPath}}" mode="widthFix" />
+          <view wx:else class="share__poster-state">{{posterMaking ? '正在画海报…' : '海报生成失败,可关闭后重试'}}</view>
+        </scroll-view>
+        <view class="share-actions__hint share__hint">存下海报,发给朋友,扫码就能打开。</view>
+        <button class="btn btn--primary share__main" open-type="share" hover-class="btn--hover">发送给朋友</button>
+        <view class="share__btnrow">
+          <view class="share__boxbtn {{!posterPath ? 'is-disabled' : ''}}" bindtap="savePoster">保存海报</view>
+          <view class="share__boxbtn" bindtap="copyChapterLink">复制链接</view>
+          <view class="share__boxbtn" bindtap="closePanel">关闭</view>
         </view>
-        <block wx:if="{{showAiPrompt}}">
-          <view class="ai-prompt hairline">
-            <view class="ai-prompt__label eyebrow">— 给 AI 的提示词</view>
-            <view class="ai-prompt__text">
-              <text selectable user-select>{{aiPromptText}}</text>
-            </view>
-            <view class="share-actions__row ai-prompt__row">
-              <view class="sheet__action" bindtap="copyAiPrompt">复制提示词</view>
-              <view class="sheet__action" bindtap="closeAiPrompt">收起</view>
-            </view>
-            <view class="share-actions__hint">粘贴给你常用的 AI 助手, 让它读完这本书陪你继续聊。</view>
-          </view>
-        </block>
-        <view wx:else class="share-actions__hint">海报可长按保存或转发;分享给 AI 会复制一段带 llms.md 链接的提示词,粘贴给你常用的 AI 助手即可。</view>
+      </view>
+
+      <!-- ai: prompt box, then copy / close -->
+      <view wx:if="{{shareTab === 'ai'}}" class="share__ai">
+        <view class="share__prompt">
+          <text selectable user-select>{{aiPromptText || '正在准备提示词…'}}</text>
+        </view>
+        <view class="share-actions__hint share__hint">复制这段,交给你常用的 AI 助手,让它读完这本书陪你继续聊。</view>
+        <view class="share__btnrow">
+          <view class="share__boxbtn share__boxbtn--accent {{!aiPromptText ? 'is-disabled' : ''}}" bindtap="copyAiPrompt">复制提示词</view>
+          <view class="share__boxbtn" bindtap="closePanel">关闭</view>
+        </view>
       </view>
     </block>
   </view>

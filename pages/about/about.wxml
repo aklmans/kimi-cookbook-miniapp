@@ -23,7 +23,7 @@
         真实工作, 而不是发布当天的漂亮话。
       </view>
       <view class="about__link" bindtap="copy" data-text="hi@zhaphar.com" data-label="邮箱">
-        hi@zhaphar.com · 复制
+        hi@zhaphar.com
       </view>
     </view>
 
@@ -41,7 +41,7 @@
         本小程序是阅读端; 评论区、PDF 下载、AI 可读版 (llms.md) 都在网页版。
       </view>
       <view class="about__link" bindtap="copy" data-text="https://kimi.read.wiki" data-label="网址">
-        kimi.read.wiki · 复制
+        kimi.read.wiki
       </view>
     </view>
 

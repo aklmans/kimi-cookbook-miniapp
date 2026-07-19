@@ -63,10 +63,22 @@
 
 .hero__stats {
   display: flex;
-  gap: 64rpx;
   border-top: 1rpx solid var(--border);
   padding-top: 28rpx;
   margin-bottom: 48rpx;
+}
+
+/* equal thirds with vertical hairline separators (label / value / desc) */
+.stat {
+  flex: 1;
+  min-width: 0;
+  padding: 0 24rpx;
+  border-left: 1rpx solid var(--border);
+}
+
+.stat:first-child {
+  padding-left: 0;
+  border-left: none;
 }
 
 .stat__label {
@@ -76,6 +88,13 @@
 .stat__value {
   font-size: 30rpx;
   color: var(--ink);
+}
+
+.stat__desc {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  line-height: 1.5;
+  color: var(--ink-3);
 }
 
 .hero__actions {
@@ -88,11 +107,21 @@
   flex: 1;
 }
 
+/* separated, centered footer zone: reading progress + about */
+.hero__foot {
+  margin-top: 64rpx;
+  padding-top: 40rpx;
+  border-top: 1rpx solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+}
+
 .hero__progress {
   font-size: 22rpx;
   letter-spacing: 4rpx;
   color: var(--ink-3);
-  margin-bottom: 48rpx;
 }
 
 .hero__about {

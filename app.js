@@ -4,9 +4,7 @@
    Mini Program is a pure presentation layer: fetch, cache, render. */
 
 import { getBook } from "./utils/api";
-
-/* Reader body sizes (px) cycled by the read page's 字号 button. */
-const FONT_SIZES = [15, 17, 19, 21];
+import { FONT_SIZES } from "./utils/theme";
 
 App({
   globalData: {
@@ -74,14 +72,6 @@ App({
     }
   },
 
-  /** Cycle 跟随系统 → 浅色 → 深色, persist, and return the effective theme. */
-  cycleTheme() {
-    const order = { system: "light", light: "dark", dark: "system" };
-    this.globalData.themeMode = order[this.globalData.themeMode] || "system";
-    wx.setStorageSync("kc:theme", this.globalData.themeMode);
-    return this.resolveTheme();
-  },
-
   /** Persisted font size, migrating the old two-level "kc:font-large"
       flag (true → 19) on first launch after the upgrade. */
   loadFontSize() {
@@ -90,12 +80,19 @@ App({
     return wx.getStorageSync("kc:font-large") ? 19 : 17;
   },
 
-  /** Cycle 15 → 17 → 19 → 21 → 15, persist, and return the new size. */
-  cycleFontSize() {
-    const i = FONT_SIZES.indexOf(this.globalData.fontSize);
-    const next = i === -1 ? 17 : FONT_SIZES[(i + 1) % FONT_SIZES.length];
+  /** Reader-settings setters (the read page's settings sheet picks values
+      directly — no cycling). Both persist and return the applied value. */
+  setFontSize(size) {
+    const next = FONT_SIZES.includes(size) ? size : 17;
     this.globalData.fontSize = next;
     wx.setStorageSync("kc:font-size", next);
     return next;
+  },
+
+  setThemeMode(mode) {
+    const next = ["system", "light", "dark"].includes(mode) ? mode : "system";
+    this.globalData.themeMode = next;
+    wx.setStorageSync("kc:theme", next);
+    return this.resolveTheme();
   },
 });

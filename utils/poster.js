@@ -2,12 +2,14 @@
    sister project (Zhaphar/website · lib/miniapp/posters.ts):
    900px wide × content-driven height, 96px margins, right edges aligned
    to 804, warm paper + hairlines (no outer frame), Tsanger serif +
-   JetBrains-style mono, title font-size LADDER (largest that fits, not
-   a fixed size), accent stop-dot, vertical-hairline lede, a fixed 214px
-   footer band with a frame-less QR on the right. Accent (Kimi blue)
-   appears exactly twice: the masthead dash and the stop-dot.
-   Handoff is wx.previewImage — long-press to save / forward, zero
-   permissions. */
+   JetBrains-style mono, single-line title sized down to fit (the web
+   poster's ImageResponse twin uses the same rule — the two posters are
+   meant to be identical), accent stop-dot, vertical-hairline kicker
+   quote, muted lede + poster summary, a fixed 214px footer band with a
+   frame-less QR on the right. Accent (Kimi blue) appears exactly twice:
+   the masthead dash and the stop-dot.
+   Returns the drawn poster's temp file path — the read page's share
+   sheet previews it inline and offers save / forward. */
 
 const W = 900;
 const MARGIN = 96;
@@ -23,7 +25,6 @@ const C = {
 };
 const SERIF = '"TsangerJinKai02-W05","Songti SC","STSong",serif';
 const MONO = '"SF Mono",Menlo,Consolas,monospace';
-const TITLE_LADDER = [66, 58, 48];
 
 function wrapText(ctx, text, maxWidth, maxLines) {
   const value = String(text || "").replace(/\s+/g, " ").trim();
@@ -105,19 +106,20 @@ export async function makeChapterPoster(page, info) {
 
   /* ── pass 1 · layout ──
      Composition (Zhaphar grammar): masthead → chapter label → title
-     (calm, capped at 2 lines) → the chapter's kicker quote with a
-     vertical hairline (the protagonist) → a short muted lede → the
-     fixed 214px footer band. The title ladder caps at 2 lines so long
-     titles drop a size instead of flooding the card. */
+     (ONE line, sized down to fit — same rule as the web poster's
+     ImageResponse twin) → the chapter's kicker quote with a vertical
+     hairline (the protagonist) → a short muted lede → poster summary →
+     the fixed 214px footer band. */
   const contentW = RIGHT - MARGIN;
-  let size = TITLE_LADDER[TITLE_LADDER.length - 1];
-  let titleLines = [];
-  for (const s of TITLE_LADDER) {
-    ctx.font = `600 ${s}px ${SERIF}`;
-    titleLines = wrapText(ctx, info.title, contentW, 2);
-    size = s;
-    if (titleLines.length <= 2) break;
+  let size = 66;
+  for (; size > 30; size -= 2) {
+    ctx.font = `600 ${size}px ${SERIF}`;
+    if (ctx.measureText(info.title).width <= contentW) break;
   }
+  const titleLines =
+    ctx.measureText(info.title).width <= contentW
+      ? [info.title]
+      : wrapText(ctx, info.title, contentW, 2);
   const titleLH = Math.round(size * 1.23);
   const titleFirstBaseline = 300 + size;
   const titleEndY = titleFirstBaseline + (titleLines.length - 1) * titleLH;
@@ -144,7 +146,25 @@ export async function makeChapterPoster(page, info) {
     ? ledeTop + (ledeLines.length - 1) * ledeLH
     : kickerEndY;
 
-  const contentBottom = ledeLines.length ? ledeEndY + 8 : kickerEndY;
+  /* poster summary — the middle-band companion (meta.posterSummary,
+     served by the chapter API). Same block exists on the web poster. */
+  let summaryLines = [];
+  if (info.summary) {
+    ctx.font = `400 24px ${SERIF}`;
+    summaryLines = wrapText(ctx, info.summary, contentW, 3);
+  }
+  const summaryLH = 40;
+  const summaryTop = (ledeLines.length ? ledeEndY : kickerEndY) + 36;
+  const summaryEndY = summaryLines.length
+    ? summaryTop + (summaryLines.length - 1) * summaryLH
+    : ledeEndY;
+
+  const contentBottom =
+    (summaryLines.length
+      ? summaryEndY
+      : ledeLines.length
+        ? ledeEndY
+        : kickerEndY) + 8;
   const footerY = contentBottom + 46;
   const H = Math.max(765, footerY + FOOTER);
 
@@ -222,6 +242,15 @@ export async function makeChapterPoster(page, info) {
     });
   }
 
+  // poster summary — muted, same weight as the lede's companion band
+  if (summaryLines.length) {
+    ctx.fillStyle = C.ink2;
+    ctx.font = `400 24px ${SERIF}`;
+    summaryLines.forEach((line, i) => {
+      ctx.fillText(line, MARGIN, summaryTop + i * summaryLH);
+    });
+  }
+
   // footer band — fixed 214px: hairline, brand + date left, QR right
   const fy = H - FOOTER;
   hairline(ctx, MARGIN, RIGHT, fy);
@@ -263,5 +292,5 @@ export async function makeChapterPoster(page, info) {
     destHeight: H * dpr,
     fileType: "png",
   });
-  await wx.previewImage({ current: tempFilePath, urls: [tempFilePath] });
+  return tempFilePath;
 }

@@ -30,6 +30,9 @@ export const THEME_ICON = {
   dark: "☾",
 };
 
+/* Reader body sizes (px) offered by the settings sheet. */
+export const FONT_SIZES = [15, 17, 19, 21];
+
 /* Reader typography for mp-html. mp-html is style-isolated: page WXSS
    can't reach inside it, so structure styles go through its `tag-style`
    prop (computed here per theme + font size), while accents ride as
@@ -74,7 +77,11 @@ export function readerTagStyle(theme, fontSize) {
     em: `font-style:normal;color:${ink2}`,
     a: `color:${ink};text-decoration:underline;text-decoration-color:${accent};text-underline-offset:3px`,
     blockquote: `margin:24px 0;padding:14px 18px;border-left:2px solid ${accent};background:${codeBg};color:${ink2}`,
-    pre: `margin:24px 0;padding:16px 18px;background:${codeBg};border-left:2px solid ${accent};font-family:${mono};font-size:0.82em;line-height:1.7;white-space:pre-wrap;word-break:break-all;color:${ink}`,
+    /* pre bleeds to the screen edges (negative margins cancel the reader's
+       40rpx padding) and pads its text back to the body inset — more
+       characters per line, fewer wraps. overflow-wrap only breaks tokens
+       that can't fit whole, replacing break-all's mid-token chops. */
+    pre: `margin:24px -40rpx;padding:16px 40rpx;background:${codeBg};border-left:2px solid ${accent};font-family:${mono};font-size:0.82em;line-height:1.7;white-space:pre-wrap;overflow-wrap:break-word;color:${ink}`,
     code: `font-family:${mono};font-size:0.86em;background:${codeBg};padding:2px 5px;color:${ink}`,
     "pre code": `background:transparent;padding:0;font-size:1em`,
     img: `max-width:100%;display:block;margin:0 auto`,

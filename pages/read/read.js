@@ -11,7 +11,7 @@ import {
 } from "../../utils/api";
 import { copyText } from "../../utils/clipboard";
 import { makeChapterPoster } from "../../utils/poster";
-import { applyTheme, readerTagStyle, THEME_LABEL, THEME_ICON } from "../../utils/theme";
+import { applyTheme, readerTagStyle, THEME_LABEL, THEME_ICON, FONT_SIZES } from "../../utils/theme";
 
 /* Resolved lazily per call — getApp() at module top level can precede
    App() registration. */
@@ -25,9 +25,16 @@ const AI_PROMPT_BOOK =
 Page({
   data: {
     theme: "light",
-    themeLabel: "跟随系统",
-    themeIcon: "◐",
+    /** The PICKED mode ("system" | "light" | "dark") for the settings
+        sheet highlight; `theme` above is the resolved one. */
+    themeMode: "system",
+    themeModes: [
+      { mode: "system", label: THEME_LABEL.system, icon: THEME_ICON.system },
+      { mode: "light", label: THEME_LABEL.light, icon: THEME_ICON.light },
+      { mode: "dark", label: THEME_LABEL.dark, icon: THEME_ICON.dark },
+    ],
     fontSize: 17,
+    fontSizes: FONT_SIZES,
     chapter: null,
     /** Chapter payload rendered at least once — drives the skeleton, which
         must survive the brief html flushes of theme/font re-bakes. */
@@ -41,7 +48,7 @@ Page({
     error: "",
     barHidden: false,
     progress: 0,
-    /** "" | "outline" | "footnote" */
+    /** "" | "outline" | "footnote" | "share" | "settings" */
     panel: "",
     /** Outline entry the reader is currently at (scroll-spy on sheet open). */
     activeOutlineId: "",
@@ -53,7 +60,10 @@ Page({
         finished — swap the endcard for the book-completion card. */
     bookDone: false,
     activeRef: null,
-    showAiPrompt: false,
+    /** Share sheet: "friend" | "ai" tab, poster temp path + draw state. */
+    shareTab: "friend",
+    posterPath: "",
+    posterMaking: false,
     aiPromptText: "",
   },
 
@@ -67,8 +77,7 @@ Page({
     this.restored = false;
     this.setData({
       fontSize: app().globalData.fontSize,
-      themeLabel: THEME_LABEL[app().globalData.themeMode],
-      themeIcon: THEME_ICON[app().globalData.themeMode],
+      themeMode: app().globalData.themeMode,
     });
     this.applyThemeRefresh();
     this.loadChapter();
@@ -300,32 +309,48 @@ Page({
     });
   },
 
-  toggleFont() {
-    const size = app().cycleFontSize();
+  /* ── reader settings sheet: direct choices, no cycling ── */
+
+  openSettings() {
+    this.setData({ panel: "settings" });
+  },
+
+  chooseFontSize(e) {
+    app().setFontSize(Number(e.currentTarget.dataset.size));
     wx.vibrateShort({ type: "light" });
-    this.setData({ fontSize: size });
+    this.setData({ fontSize: app().globalData.fontSize });
     this.applyReaderStyle();
   },
 
-  toggleTheme() {
-    app().cycleTheme();
+  chooseThemeMode(e) {
+    app().setThemeMode(e.currentTarget.dataset.mode);
     wx.vibrateShort({ type: "light" });
-    this.setData({
-      themeLabel: THEME_LABEL[app().globalData.themeMode],
-      themeIcon: THEME_ICON[app().globalData.themeMode],
-    });
+    this.setData({ themeMode: app().globalData.themeMode });
     this.applyThemeRefresh();
   },
 
   openShare() {
     this.setData({ panel: "share" });
+    this.ensurePoster();
   },
 
-  async makePoster() {
-    this.setData({ panel: "" });
+  setShareTab(e) {
+    const tab = e.currentTarget.dataset.tab;
+    this.setData({ shareTab: tab });
+    // The prompt builds lazily on first use — it awaits the book payload
+    // for the chapter lede.
+    if (tab === "ai" && !this.data.aiPromptText) {
+      this.buildAiPrompt().then((prompt) => this.setData({ aiPromptText: prompt }));
+    }
+  },
+
+  /** Draw the chapter poster once per visit and cache its temp path for
+      the share sheet's inline preview. */
+  async ensurePoster() {
+    if (this.data.posterPath || this.data.posterMaking) return;
     const ch = this.data.chapter;
     if (!ch) return;
-    wx.showLoading({ title: "正在画海报", mask: true });
+    this.setData({ posterMaking: true });
     try {
       let lede = "";
       try {
@@ -338,23 +363,28 @@ Page({
       const ord = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十"][
         Number(ch.number) - 1
       ];
-      await makeChapterPoster(this, {
+      const path = await makeChapterPoster(this, {
         number: `${ch.number} · 第${ord}章`,
         title: ch.title,
         kicker: ch.kicker || "",
         lede,
+        summary: ch.posterSummary || "",
         url: `https://kimi.read.wiki/books/kimi/${this.slug}`,
       });
+      if (path) this.setData({ posterPath: path });
     } catch (e) {
-      wx.showToast({ title: "海报生成失败", icon: "none" });
-    } finally {
-      wx.hideLoading();
+      /* the preview area keeps its failure note */
     }
+    this.setData({ posterMaking: false });
   },
 
-  shareToAI() {
-    this.buildAiPrompt().then((prompt) => {
-      this.setData({ showAiPrompt: true, aiPromptText: prompt });
+  savePoster() {
+    if (!this.data.posterPath) return;
+    wx.saveImageToPhotosAlbum({
+      filePath: this.data.posterPath,
+      success: () => wx.showToast({ title: "已存到相册" }),
+      fail: () =>
+        wx.showToast({ title: "保存失败,请检查相册授权", icon: "none" }),
     });
   },
 
@@ -387,12 +417,9 @@ Page({
     copyText(this.data.aiPromptText || AI_PROMPT_BOOK, "已复制,粘贴给 AI 即可");
   },
 
-  closeAiPrompt() {
-    this.setData({ showAiPrompt: false });
-  },
-
   copyChapterLink() {
-    this.setData({ panel: "" });
+    /* Keep the sheet open — the toast is feedback enough; closing the
+       whole share sheet after one tap reads as a crash, not a success. */
     copyText(`https://kimi.read.wiki/books/kimi/${this.slug}`, "链接已复制");
   },
 
