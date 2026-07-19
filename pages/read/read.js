@@ -16,7 +16,7 @@ import { applyTheme, readerTagStyle, THEME_LABEL } from "../../utils/theme";
 const app = () => getApp();
 
 const AI_PROMPT =
-  "请帮我阅读 Zhapar 写的这本关于 Kimi 的书, 按需为我总结要点、回答具体问题、做读书笔记。引用时请保留作者署名和章节链接。\n\n完整 markdown: https://kimi.read.wiki/books/kimi/llms.md\n书的网页版 (含评论): https://kimi.read.wiki/books/kimi";
+  "请阅读《Kimi · 从长文本到一套 agent 栈》—— Zhapar 写的一本讲透 Kimi 产品栈的书 (10 章, 中文): K3 与 K2.7-Code 模型、四模式、Agent 与 Agent Swarm、Deep Research、Kimi Code 与开放 API、五档会员的取舍。\n\n第一步: 先抓取这份全书 markdown 再开始 —— https://kimi.read.wiki/books/kimi/llms.md\n它是这本书的完整文本。如果抓取失败, 请直接告诉我「打不开链接」, 不要凭你对 Kimi 的了解编造本书内容; 我要的是这本书里写的判断, 不是印象里的 Kimi。\n\n然后按需为我总结要点、回答具体问题、做读书笔记。引用时请保留作者署名 (Zhapar) 和章节链接。书的网页版 (含评论): https://kimi.read.wiki/books/kimi";
 
 Page({
   data: {
