@@ -10,8 +10,8 @@
 ```
 app.js / app.json / app.wxss   全局:主题(浅/深/跟随系统)、设计 token、
                                仓耳今楷 wx.loadFontFace、页面淡入
-pages/book/                    首页 = 书页(刊头 NO.01、月砖封面卡、
-                               继续阅读、已读 N/10、骨架屏)
+pages/book/                    首页 = 书页(刊头 NO.01、网页封面卡(CoverVisual
+                               栅格化)、继续阅读、已读 N/10、骨架屏)
 pages/toc/                     目录(10 章,在读标记、已读置灰,骨架屏)
 pages/read/                    阅读器(mp-html + Tsanger 排版)
                                · 章节内大纲(浮动 ≡ → 底部弹层,锚点跳转,高亮当前节)
@@ -31,7 +31,9 @@ components/mp-html/            富文本渲染器(vendored mp-html v2.5.2,
                                dist/mp-weixin,免 npm 构建)
 utils/api.js                   内容 API 客户端(SWR 缓存 1h)+ 阅读状态 + 预取
 utils/theme.js                 主题应用 + mp-html tag-style 排版表(Tsanger 栈)
-assets/moon-tile.png           月之暗面站标(与网页 favicon 同构图)
+assets/moon-tile.png           月之暗面站标(与网页 favicon 同构图,分享卡片用)
+assets/cover.png               首页封面:站点 CoverVisual 月景栅格化
+                               (dev server + Playwright 截图,品牌图变更时重出)
 ```
 
 ## 本地跑起来(验收)
@@ -46,8 +48,8 @@ assets/moon-tile.png           月之暗面站标(与网页 favicon 同构图)
 
 ## 走查清单(P2 验收)
 
-- [ ] 首页:刊头 `KIMI COOKBOOK · NO. 01` + 月砖卡;读到章末两章后回来,CTA 变
-      「继续 · <章名>」且出现「已读 N / 10」(按读完计)
+- [ ] 首页:刊头 `KIMI COOKBOOK · NO. 01` + 网页封面卡(月景 + 蓝卫星);读到
+      章末两章后回来,CTA 变「继续 · <章名>」且出现「已读 N / 10」(按读完计)
 - [ ] 目录:10 章,打开过未读完的标「在读」,读完的置灰;骨架屏先于内容出现
 - [ ] 阅读:正文是仓耳今楷(衬线有笔锋,不是系统宋);代码块冷蓝面 + 蓝左条、
       全宽出血、长命令在词边界断行

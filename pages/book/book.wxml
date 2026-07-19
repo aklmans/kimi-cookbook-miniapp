@@ -21,9 +21,11 @@
       <view class="masthead__serial mono">NO. 01</view>
     </view>
 
+    <!-- the web cover art (CoverVisual moon scene), rasterized once to a
+         local asset via the site repo's dev server + Playwright;
+         re-shoot when the brand art changes -->
     <view class="cover-card">
-      <image class="cover-card__moon" src="/assets/moon-tile.png" mode="aspectFit" />
-      <view class="cover-card__brand">KIMI</view>
+      <image class="cover-card__img" src="/assets/cover.png" mode="aspectFill" />
     </view>
 
     <view class="hero__eyebrow eyebrow">— 技术 · 实践</view>
