@@ -1,6 +1,6 @@
 {
   "description": "Kimi Cookbook 微信小程序 — 《Kimi · 从长文本到一套 agent 栈》阅读端",
-  "appid": "touristappid",
+  "appid": "wxb5a02ec86e50fb2d",
   "compileType": "miniprogram",
   "libVersion": "latest",
   "setting": {
@@ -15,11 +15,29 @@
       "ignore": [],
       "disablePlugins": [],
       "outputPath": ""
-    }
+    },
+    "compileWorklet": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true
   },
   "condition": {},
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
+  },
+  "simulatorPluginLibVersion": {},
+  "packOptions": {
+    "ignore": [],
+    "include": []
   }
 }

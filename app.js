@@ -3,6 +3,8 @@
    Content comes from the Next.js content API (/api/mp/v1/*); the
    Mini Program is a pure presentation layer: fetch, cache, render. */
 
+import { getBook } from "./utils/api";
+
 App({
   globalData: {
     /** Production content API. For local development point this at the
@@ -12,11 +14,38 @@ App({
     /** "system" | "light" | "dark" */
     themeMode: "system",
     fontLarge: false,
+    /** Tsanger JinKai (the site's editorial serif) finished downloading. */
+    tsangerReady: false,
   },
 
   onLaunch() {
     this.globalData.themeMode = wx.getStorageSync("kc:theme") || "system";
     this.globalData.fontLarge = Boolean(wx.getStorageSync("kc:font-large"));
+    this.loadTsanger();
+    // Warm the book payload so the first page paints from cache next time.
+    getBook().catch(() => {});
+  },
+
+  /* Tsanger JinKai02 — the site's editorial serif, subset to ~0.5 MB per
+     weight and served from the site itself. Loads globally so every page
+     and mp-html can stack it ahead of the system Songti fallback; the
+     fallback chain keeps text visible while the download is in flight. */
+  loadTsanger() {
+    const base = this.globalData.baseUrl;
+    for (const family of ["TsangerJinKai02-W04", "TsangerJinKai02-W05"]) {
+      wx.loadFontFace({
+        family,
+        source: `url("${base}/fonts/${family}.subset.woff2")`,
+        global: true,
+        scopes: ["webview", "native"],
+        success: () => {
+          this.globalData.tsangerReady = true;
+        },
+        fail: () => {
+          /* typography degrades to Songti — reading continues */
+        },
+      });
+    }
   },
 
   /** Effective theme after the "system" resolution. */

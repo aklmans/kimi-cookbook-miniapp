@@ -4,6 +4,7 @@
 
 .t-light {
   --bg: #fafafa;
+  --bg-bar: rgba(250, 250, 250, 0.86);
   --ink: #1a1a1a;
   --ink-2: #3a3a3a;
   --ink-3: #6b6b6b;
@@ -12,10 +13,12 @@
   --accent: #1783ff;
   --code-bg: #f3f6f9;
   --card-ink: #0e0e13;
+  --skeleton: #eeece7;
 }
 
 .t-dark {
   --bg: #1a1a1a;
+  --bg-bar: rgba(26, 26, 26, 0.82);
   --ink: #fafafa;
   --ink-2: #b8b8b8;
   --ink-3: #8a8a8a;
@@ -24,16 +27,34 @@
   --accent: #5e9fff;
   --code-bg: #242a32;
   --card-ink: #06080e;
+  --skeleton: #262626;
 }
 
+/* The site's editorial serif (loaded via wx.loadFontFace at launch),
+   stacked ahead of the system CJK serifs it falls back to. */
 .page {
   min-height: 100vh;
   background: var(--bg);
   color: var(--ink);
-  font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+  font-family: "TsangerJinKai02-W04", "Songti SC", "STSong", "Noto Serif SC", serif;
   font-size: 17px;
   line-height: 1.8;
   box-sizing: border-box;
+  animation: page-fade-in 180ms ease-out;
+}
+
+.serif-600 {
+  font-family: "TsangerJinKai02-W05", "Songti SC", "STSong", "Noto Serif SC", serif;
+  font-weight: 600;
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .mono {
@@ -65,11 +86,39 @@
   background: transparent;
   color: var(--ink);
   border-radius: 0;
+  transition: opacity 120ms ease, background 120ms ease;
 }
 .btn--primary {
   background: var(--ink);
   color: var(--bg);
 }
+.btn--hover,
+.btn.button-hover {
+  opacity: 0.72;
+}
 .btn::after {
   border: none;
+}
+
+/* Skeleton shimmer — used by every page's loading state. */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--skeleton);
+  border-radius: 4rpx;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+  animation: skeleton-sweep 1.2s ease-in-out infinite;
+}
+@keyframes skeleton-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
 }

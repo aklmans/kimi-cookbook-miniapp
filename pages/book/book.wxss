@@ -1,22 +1,34 @@
 .hero {
-  padding: 48rpx 48rpx 96rpx;
+  padding: 40rpx 48rpx 96rpx;
+}
+
+.masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 24rpx;
+  margin-bottom: 32rpx;
+  border-bottom: 1rpx solid var(--border);
+  font-size: 20rpx;
+  letter-spacing: 6rpx;
+  color: var(--ink-3);
 }
 
 .cover-card {
   background: var(--card-ink);
   border-radius: 20rpx;
-  height: 400rpx;
+  height: 460rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 24rpx;
-  margin-bottom: 64rpx;
+  gap: 28rpx;
+  margin-bottom: 56rpx;
 }
 
 .cover-card__moon {
-  width: 180rpx;
-  height: 180rpx;
+  width: 220rpx;
+  height: 220rpx;
 }
 
 .cover-card__brand {
@@ -32,8 +44,7 @@
 }
 
 .hero__title {
-  font-size: 52rpx;
-  font-weight: 600;
+  font-size: 54rpx;
   line-height: 1.35;
   margin-bottom: 28rpx;
   color: var(--ink);
@@ -55,7 +66,7 @@
   gap: 64rpx;
   border-top: 1rpx solid var(--border);
   padding-top: 28rpx;
-  margin-bottom: 56rpx;
+  margin-bottom: 48rpx;
 }
 
 .stat__label {
@@ -64,18 +75,24 @@
 
 .stat__value {
   font-size: 30rpx;
-  font-weight: 600;
   color: var(--ink);
 }
 
 .hero__actions {
   display: flex;
   gap: 24rpx;
-  margin-bottom: 64rpx;
+  margin-bottom: 20rpx;
 }
 
 .hero__cta {
   flex: 1;
+}
+
+.hero__progress {
+  font-size: 22rpx;
+  letter-spacing: 4rpx;
+  color: var(--ink-3);
+  margin-bottom: 48rpx;
 }
 
 .hero__about {
@@ -99,4 +116,33 @@
 .state__text {
   color: var(--ink-3);
   font-size: 28rpx;
+}
+
+/* skeleton */
+.hero__sk-cover {
+  height: 460rpx;
+  border-radius: 20rpx;
+  margin: 32rpx 0 56rpx;
+}
+.hero__sk-eyebrow {
+  width: 180rpx;
+  height: 24rpx;
+  margin-bottom: 32rpx;
+}
+.hero__sk-title {
+  width: 92%;
+  height: 64rpx;
+  margin-bottom: 20rpx;
+}
+.hero__sk-title--short {
+  width: 55%;
+  margin-bottom: 48rpx;
+}
+.hero__sk-line {
+  width: 100%;
+  height: 30rpx;
+  margin-bottom: 18rpx;
+}
+.hero__sk-line--short {
+  width: 70%;
 }

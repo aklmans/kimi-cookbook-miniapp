@@ -81,6 +81,20 @@ export function getVersion() {
   return cached("kc:cache:version", "/api/mp/v1/version", 60 * 1000);
 }
 
+/** Silent prefetch — fills the cache, never throws, never renders. */
+export function prefetchChapter(slug) {
+  if (!slug) return;
+  request(`/api/mp/v1/chapters/${slug}`)
+    .then((data) => {
+      try {
+        wx.setStorageSync(`kc:cache:ch:${slug}`, { time: Date.now(), data });
+      } catch (e) {
+        /* ignore */
+      }
+    })
+    .catch(() => {});
+}
+
 /* ── reading state (visited + progress), all local ── */
 
 export function markVisited(slug) {

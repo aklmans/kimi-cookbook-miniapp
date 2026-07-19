@@ -79,3 +79,22 @@
   color: var(--ink-3);
   font-size: 28rpx;
 }
+
+/* skeleton rows */
+.toc-row--sk {
+  pointer-events: none;
+}
+.toc-row__sk-num {
+  width: 56rpx;
+  height: 30rpx;
+  margin-top: 8rpx;
+}
+.toc-row__sk-title {
+  width: 78%;
+  height: 34rpx;
+  margin-bottom: 14rpx;
+}
+.toc-row__sk-lede {
+  width: 96%;
+  height: 26rpx;
+}

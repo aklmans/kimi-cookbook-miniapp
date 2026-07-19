@@ -1,30 +1,67 @@
 <view class="page t-{{theme}}">
-  <view wx:if="{{error}}" class="state">
-    <view class="state__text">{{error}}</view>
-    <button class="btn" bindtap="loadChapter">重试</button>
+  <!-- skeleton while the chapter is in flight -->
+  <view wx:if="{{!html && !error}}" class="reader">
+    <view class="skeleton reader__sk-eyebrow" />
+    <view class="skeleton reader__sk-title" />
+    <view class="skeleton reader__sk-lede" />
+    <view class="skeleton reader__sk-line" />
+    <view class="skeleton reader__sk-line" />
+    <view class="skeleton reader__sk-line reader__sk-line--short" />
+    <view class="skeleton reader__sk-line" />
+    <view class="skeleton reader__sk-line" />
   </view>
 
-  <block wx:elif="{{html}}">
+  <view wx:elif="{{error}}" class="state">
+    <view class="state__text">{{error}}</view>
+    <button class="btn" hover-class="btn--hover" bindtap="loadChapter">重试</button>
+  </view>
+
+  <block wx:else>
     <view class="reader">
       <mp-html
+        id="mp-html"
         content="{{html}}"
         container-style="{{containerStyle}}"
         tag-style="{{tagStyle}}"
+        use-anchor="{{true}}"
         bindlinktap="onLinkTap"
         bindimgtap="onImgTap"
       />
     </view>
 
-    <view class="reader__end hairline">
-      <view class="reader__kicker">· 本章完 ·</view>
+    <!-- end-of-chapter passage -->
+    <view class="endcard hairline">
+      <view class="endcard__kicker mono">· 本章完 ·</view>
+      <view class="endcard__actions">
+        <button
+          wx:if="{{chapter.prev}}"
+          class="btn endcard__nav"
+          hover-class="btn--hover"
+          bindtap="openPrev"
+        >← {{chapter.prev.title}}</button>
+        <button
+          wx:if="{{chapter.next}}"
+          class="btn btn--primary endcard__nav"
+          hover-class="btn--hover"
+          bindtap="openNext"
+        >{{chapter.next.title}} →</button>
+      </view>
+      <view class="endcard__row">
+        <view class="endcard__link" bindtap="openToc">全部目录</view>
+        <button class="endcard__link endcard__share" open-type="share" hover-class="btn--hover">分享本章</button>
+      </view>
     </view>
   </block>
 
-  <view wx:else class="state">
-    <view class="state__text">正在翻页…</view>
-  </view>
+  <!-- in-chapter outline FAB -->
+  <view
+    wx:if="{{outline.length > 0 && html}}"
+    class="fab t-{{theme}} {{barHidden ? 'fab--down' : ''}}"
+    bindtap="toggleOutline"
+  >≡</view>
 
-  <view class="bottombar t-{{theme}}">
+  <!-- bottom bar (immersive) -->
+  <view class="bottombar t-{{theme}} {{barHidden ? 'is-hidden' : ''}}">
     <view class="bottombar__item {{!chapter || !chapter.prev ? 'is-disabled' : ''}}" bindtap="openPrev">
       ← 上一章
     </view>
@@ -40,4 +77,37 @@
     </view>
   </view>
   <view class="bottombar__space" />
+
+  <!-- bottom sheet: outline / footnote -->
+  <view wx:if="{{panel}}" class="sheet-mask" bindtap="closePanel" />
+  <view class="sheet t-{{theme}} {{panel ? 'is-open' : ''}}">
+    <block wx:if="{{panel === 'outline'}}">
+      <view class="sheet__head hairline">
+        <view class="sheet__title eyebrow">— 本章目录</view>
+        <view class="sheet__close" bindtap="closePanel">×</view>
+      </view>
+      <scroll-view scroll-y class="sheet__scroll">
+        <view
+          wx:for="{{outline}}"
+          wx:key="id"
+          class="sheet__item sheet__item--lv{{item.level}}"
+          hover-class="sheet__item--hover"
+          data-id="{{item.id}}"
+          bindtap="jumpToSection"
+        >{{item.title}}</view>
+      </scroll-view>
+    </block>
+
+    <block wx:if="{{panel === 'footnote' && activeRef}}">
+      <view class="sheet__head hairline">
+        <view class="sheet__title eyebrow">— 引用 {{activeRef.id}}</view>
+        <view class="sheet__close" bindtap="closePanel">×</view>
+      </view>
+      <view class="sheet__ref-body">{{activeRef.body}}</view>
+      <view class="sheet__ref-actions">
+        <view wx:if="{{activeRef.url}}" class="sheet__action" bindtap="copyRefLink">复制链接</view>
+        <view class="sheet__action" bindtap="jumpToRefs">全部引用 ↓</view>
+      </view>
+    </block>
+  </view>
 </view>

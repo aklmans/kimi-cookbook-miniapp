@@ -1,17 +1,33 @@
 <view class="page t-{{theme}}">
-  <view wx:if="{{error}}" class="state">
+  <!-- skeleton while the book payload is in flight -->
+  <view wx:if="{{!book && !error}}" class="hero">
+    <view class="skeleton hero__sk-cover" />
+    <view class="skeleton hero__sk-eyebrow" />
+    <view class="skeleton hero__sk-title" />
+    <view class="skeleton hero__sk-title hero__sk-title--short" />
+    <view class="skeleton hero__sk-line" />
+    <view class="skeleton hero__sk-line" />
+    <view class="skeleton hero__sk-line hero__sk-line--short" />
+  </view>
+
+  <view wx:elif="{{error}}" class="state">
     <view class="state__text">{{error}}</view>
     <button class="btn" bindtap="loadBook">重试</button>
   </view>
 
-  <view wx:elif="{{book}}" class="hero">
+  <view wx:else class="hero">
+    <view class="masthead">
+      <view class="masthead__brand mono">KIMI COOKBOOK</view>
+      <view class="masthead__serial mono">NO. 01</view>
+    </view>
+
     <view class="cover-card">
       <image class="cover-card__moon" src="/assets/moon-tile.png" mode="aspectFit" />
       <view class="cover-card__brand">KIMI</view>
     </view>
 
     <view class="hero__eyebrow eyebrow">— 技术 · 实践</view>
-    <view class="hero__title">
+    <view class="hero__title serif-600">
       {{book.coverTitle}}<text class="hero__stop">.</text>
     </view>
     <view class="hero__lede">{{book.lede}}</view>
@@ -19,27 +35,24 @@
     <view class="hero__stats">
       <view class="stat">
         <view class="stat__label eyebrow">章节</view>
-        <view class="stat__value">{{book.chapters.length}}</view>
+        <view class="stat__value serif-600">{{book.chapters.length}}</view>
       </view>
       <view class="stat">
         <view class="stat__label eyebrow">更新</view>
-        <view class="stat__value">{{book.updated}}</view>
+        <view class="stat__value serif-600">{{book.updated}}</view>
       </view>
       <view class="stat">
         <view class="stat__label eyebrow">作者</view>
-        <view class="stat__value">{{book.author}}</view>
+        <view class="stat__value serif-600">{{book.author}}</view>
       </view>
     </view>
 
     <view class="hero__actions">
-      <button class="btn btn--primary hero__cta" bindtap="startReading">{{resumeLabel}}</button>
-      <button class="btn" bindtap="openToc">目录</button>
+      <button class="btn btn--primary hero__cta" hover-class="btn--hover" bindtap="startReading">{{resumeLabel}}</button>
+      <button class="btn" hover-class="btn--hover" bindtap="openToc">目录</button>
     </view>
+    <view wx:if="{{readCount > 0}}" class="hero__progress mono">已读 {{readCount}} / {{book.chapters.length}}</view>
 
     <view class="hero__about" bindtap="openAbout">关于本书 · 授权 →</view>
-  </view>
-
-  <view wx:else class="state">
-    <view class="state__text">正在打开这本书…</view>
   </view>
 </view>

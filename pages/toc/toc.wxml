@@ -9,6 +9,16 @@
     <view class="state__text">{{error}}</view>
   </view>
 
+  <view wx:elif="{{!book}}" class="toc-list">
+    <view wx:for="{{[1,2,3,4,5,6]}}" wx:key="*this" class="toc-row toc-row--sk">
+      <view class="skeleton toc-row__sk-num" />
+      <view class="toc-row__body">
+        <view class="skeleton toc-row__sk-title" />
+        <view class="skeleton toc-row__sk-lede" />
+      </view>
+    </view>
+  </view>
+
   <view wx:else class="toc-list">
     <view
       wx:for="{{rows.length ? rows : (book ? book.chapters : [])}}"

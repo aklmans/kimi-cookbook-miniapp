@@ -1,4 +1,4 @@
-import { getBook, getLastRead } from "../../utils/api";
+import { getBook, getLastRead, isVisited } from "../../utils/api";
 import { applyTheme } from "../../utils/theme";
 
 Page({
@@ -6,6 +6,7 @@ Page({
     theme: "light",
     book: null,
     resumeLabel: "开始阅读 →",
+    readCount: 0,
     error: "",
   },
 
@@ -24,6 +25,7 @@ Page({
     return {
       title: book ? book.title : "Kimi Cookbook",
       path: "/pages/book/book",
+      imageUrl: "/assets/moon-tile.png",
     };
   },
 
@@ -44,15 +46,21 @@ Page({
   refreshResume() {
     const book = this.data.book;
     if (!book || !book.chapters.length) return;
+    const readCount = book.chapters.filter((c) => isVisited(c.slug)).length;
     const last = getLastRead();
     const exists = last && book.chapters.some((c) => c.slug === last.slug);
     if (exists) {
       const ch = book.chapters.find((c) => c.slug === last.slug);
-      this.setData({ resumeLabel: `继续 · ${ch.titleShort} →`, resumeSlug: last.slug });
+      this.setData({
+        resumeLabel: `继续 · ${ch.titleShort} →`,
+        resumeSlug: last.slug,
+        readCount,
+      });
     } else {
       this.setData({
         resumeLabel: "开始阅读 →",
         resumeSlug: book.chapters[0].slug,
+        readCount,
       });
     }
   },
