@@ -1,10 +1,18 @@
-/* Share poster — Canvas 2D, drawn off-screen and handed to the reader
-   via wx.previewImage (long-press to save / forward — zero permissions,
-   pattern from the sister Taro app). Fixed warm-paper palette: the
-   poster is print collateral, not a theme surface. */
+/* Share poster — Canvas 2D, Zhaphar poster grammar ported from the
+   sister project (Zhaphar/website · lib/miniapp/posters.ts):
+   900px wide × content-driven height, 96px margins, right edges aligned
+   to 804, warm paper + hairlines (no outer frame), Tsanger serif +
+   JetBrains-style mono, title font-size LADDER (largest that fits, not
+   a fixed size), accent stop-dot, vertical-hairline lede, a fixed 214px
+   footer band with a frame-less QR on the right. Accent (Kimi blue)
+   appears exactly twice: the masthead dash and the stop-dot.
+   Handoff is wx.previewImage — long-press to save / forward, zero
+   permissions. */
 
-const W = 750;
-const H = 940;
+const W = 900;
+const MARGIN = 96;
+const RIGHT = 804;
+const FOOTER = 214;
 const C = {
   bg: "#fafafa",
   ink: "#1a1a1a",
@@ -15,8 +23,8 @@ const C = {
 };
 const SERIF = '"TsangerJinKai02-W05","Songti SC","STSong",serif';
 const MONO = '"SF Mono",Menlo,Consolas,monospace';
+const TITLE_LADDER = [76, 66, 58, 48];
 
-/** CJK-aware line wrapping: break Latin on words, CJK anywhere, ellipsize. */
 function wrapText(ctx, text, maxWidth, maxLines) {
   const value = String(text || "").replace(/\s+/g, " ").trim();
   const tokens = /\s/.test(value)
@@ -45,7 +53,6 @@ function wrapText(ctx, text, maxWidth, maxLines) {
   return lines;
 }
 
-/** canvas has no letter-spacing — draw spaced mono one char at a time. */
 function drawSpaced(ctx, text, x, y, spacing) {
   let cx = x;
   for (const ch of text) {
@@ -61,8 +68,8 @@ function drawSpacedRight(ctx, text, rightX, y, spacing) {
   drawSpaced(ctx, text, rightX - total, y, spacing);
 }
 
-function hairline(ctx, x1, x2, y) {
-  ctx.strokeStyle = C.rule;
+function hairline(ctx, x1, x2, y, color = C.rule) {
+  ctx.strokeStyle = color;
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(x1, y + 0.5);
@@ -70,11 +77,8 @@ function hairline(ctx, x1, x2, y) {
   ctx.stroke();
 }
 
-/**
- * Draw the chapter poster and preview it.
- * @param {object} page the read page instance (for SelectorQuery context)
- * @param {{number:string,title:string,lede:string}} info
- */
+/* Two passes on the same ctx: measure first to size the canvas, then
+   draw into the resized canvas (resizing resets the context state). */
 export async function makeChapterPoster(page, info) {
   const [field] = await new Promise((resolve) => {
     page
@@ -96,72 +100,133 @@ export async function makeChapterPoster(page, info) {
     /* keep 2 */
   }
   canvas.width = W * dpr;
-  canvas.height = H * dpr;
+  canvas.height = 10 * dpr;
   ctx.scale(dpr, dpr);
 
-  // paper
+  /* ── pass 1 · layout ── */
+  // masthead sits at y=140/180; chapter label at 232; title block starts
+  // at 280. Choose the largest ladder size whose title fits in 3 lines.
+  const contentW = RIGHT - MARGIN;
+  let size = TITLE_LADDER[TITLE_LADDER.length - 1];
+  let titleLines = [];
+  for (const s of TITLE_LADDER) {
+    ctx.font = `600 ${s}px ${SERIF}`;
+    titleLines = wrapText(ctx, info.title, contentW, 3);
+    size = s;
+    if (titleLines.length <= 3) break;
+  }
+  const titleLH = Math.round(size * 1.23);
+  const titleFirstBaseline = 280 + size;
+
+  let ledeLines = [];
+  if (info.lede) {
+    ctx.font = `400 28px ${SERIF}`;
+    ledeLines = wrapText(ctx, info.lede, contentW - 34, 4);
+  }
+  const ledeLH = 44;
+
+  const titleEndY = titleFirstBaseline + (titleLines.length - 1) * titleLH;
+  const ledeTop = titleEndY + 58;
+  const ledeEndY = ledeLines.length
+    ? ledeTop + (ledeLines.length - 1) * ledeLH
+    : titleEndY;
+  const contentBottom = ledeLines.length ? ledeEndY + 8 : titleEndY;
+  const footerY = contentBottom + 46;
+  const H = Math.max(765, footerY + FOOTER);
+
+  /* ── pass 2 · draw (resizing resets state) ── */
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
   ctx.fillStyle = C.bg;
   ctx.fillRect(0, 0, W, H);
 
-  // masthead
-  const px = 64;
+  // masthead — accent dash + spaced mono brand + serial, hairline
+  ctx.fillStyle = C.accent;
+  ctx.fillRect(MARGIN, 132, 42, 3);
+  ctx.fillStyle = C.ink;
+  ctx.font = `600 15px ${MONO}`;
+  drawSpaced(ctx, "KIMI COOKBOOK", MARGIN + 66, 140, 4);
   ctx.fillStyle = C.muted;
-  ctx.font = `600 20px ${MONO}`;
-  drawSpaced(ctx, "KIMI COOKBOOK", px, 88, 8);
-  drawSpacedRight(ctx, "NO. 01", W - px, 88, 8);
-  hairline(ctx, px, W - px, 116);
+  drawSpacedRight(ctx, "NO. 01", RIGHT, 140, 4);
+  hairline(ctx, MARGIN, RIGHT, 180, "rgba(58,58,58,0.34)");
 
-  // moon tile
+  // chapter label
+  ctx.fillStyle = C.muted;
+  ctx.font = `600 14px ${MONO}`;
+  drawSpaced(ctx, info.number || "", MARGIN, 232, 3);
+
+  // title — the protagonist, on the ladder
+  ctx.fillStyle = C.ink;
+  ctx.font = `600 ${size}px ${SERIF}`;
+  let lastWidth = 0;
+  titleLines.forEach((line, i) => {
+    const y = titleFirstBaseline + i * titleLH;
+    ctx.fillText(line, MARGIN, y);
+    if (i === titleLines.length - 1) lastWidth = ctx.measureText(line).width;
+  });
+
+  // accent stop-dot — pinned at the last line's end, only when the
+  // sentence doesn't already close itself (a dot after 。!?… is a typo,
+  // not a signature).
+  if (!/[。!?…；，、：:;,.!?]$/.test(info.title.trim())) {
+    ctx.fillStyle = C.accent;
+    ctx.beginPath();
+    ctx.arc(
+      Math.min(RIGHT - 16, MARGIN + lastWidth + 20),
+      titleEndY - size * 0.12,
+      7,
+      0,
+      Math.PI * 2,
+    );
+    ctx.fill();
+  }
+
+  // lede — vertical hairline, not a color block
+  if (ledeLines.length) {
+    ctx.strokeStyle = C.rule;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(MARGIN + 0.5, ledeTop - 30);
+    ctx.lineTo(MARGIN + 0.5, ledeEndY + 14);
+    ctx.stroke();
+    ctx.fillStyle = C.ink2;
+    ctx.font = `400 28px ${SERIF}`;
+    ledeLines.forEach((line, i) => {
+      ctx.fillText(line, MARGIN + 34, ledeTop + i * ledeLH);
+    });
+  }
+
+  // footer band — fixed 214px: hairline, brand + date left, QR right
+  const fy = H - FOOTER;
+  hairline(ctx, MARGIN, RIGHT, fy);
+  ctx.fillStyle = C.ink;
+  ctx.font = `600 20px ${SERIF}`;
+  ctx.fillText("Kimi · 从长文本到一套 agent 栈", MARGIN, fy + 78);
+  ctx.fillStyle = C.muted;
+  ctx.font = `600 13px ${MONO}`;
+  const today = new Date();
+  const stamp = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, "0")}.${String(today.getDate()).padStart(2, "0")}`;
+  drawSpaced(ctx, stamp, MARGIN, fy + 116, 2);
+
   try {
     const img = canvas.createImage();
     await new Promise((resolve, reject) => {
       img.onload = resolve;
       img.onerror = reject;
-      img.src = "/assets/moon-tile.png";
+      img.src = `https://kimi.read.wiki/api/mp/qr.png?url=${encodeURIComponent(info.url)}`;
     });
-    ctx.drawImage(img, px, 168, 132, 132);
+    const qrSize = 132;
+    ctx.drawImage(img, RIGHT - qrSize, fy + 41, qrSize, qrSize);
+    ctx.fillStyle = C.muted;
+    ctx.font = `500 15px ${SERIF}`;
+    const cap = "扫码读全文";
+    const capW = ctx.measureText(cap).width;
+    ctx.fillText(cap, RIGHT - qrSize + (qrSize - capW) / 2, fy + 41 + qrSize + 28);
   } catch (e) {
-    /* tile is decorative — the poster still reads without it */
+    /* no QR — the poster still stands (footer text carries the URL) */
   }
 
-  // chapter number
-  ctx.fillStyle = C.muted;
-  ctx.font = `600 20px ${MONO}`;
-  drawSpaced(ctx, info.number || "", px + 170, 236, 3);
-
-  // title — the protagonist
-  ctx.fillStyle = C.ink;
-  ctx.font = `600 46px ${SERIF}`;
-  const titleLines = wrapText(ctx, info.title, W - px * 2, 2);
-  let y = 400;
-  for (const line of titleLines) {
-    ctx.fillText(line, px, y);
-    y += 64;
-  }
-
-  // accent rule
-  ctx.fillStyle = C.accent;
-  ctx.fillRect(px, y - 12, 56, 5);
-  y += 40;
-
-  // lede
-  if (info.lede) {
-    ctx.fillStyle = C.ink2;
-    ctx.font = `400 26px ${SERIF}`;
-    for (const line of wrapText(ctx, info.lede, W - px * 2, 4)) {
-      ctx.fillText(line, px, y);
-      y += 44;
-    }
-  }
-
-  // footer
-  hairline(ctx, px, W - px, H - 116);
-  ctx.fillStyle = C.muted;
-  ctx.font = `600 20px ${MONO}`;
-  drawSpaced(ctx, "kimi.read.wiki", px, H - 66, 4);
-  drawSpacedRight(ctx, "ZHAPAR", W - px, H - 66, 4);
-
-  // export — wait one frame so the first capture isn't blank
   await new Promise((r) => canvas.requestAnimationFrame(r));
   const { tempFilePath } = await wx.canvasToTempFilePath({
     canvas,

@@ -67,9 +67,11 @@
   margin-bottom: 32rpx;
 }
 
-/* 100% width, single line, arrows outside the text run */
+/* 100% width, single line, arrows outside the text run; margin:0 beats
+   the WeChat <button> UA's auto side-margins that shrink the button. */
 .endcard__nav {
   width: 100%;
+  margin: 0;
   justify-content: flex-start;
   font-size: 15px;
   white-space: nowrap;
@@ -208,6 +210,35 @@
   font-size: 22rpx;
   line-height: 1.6;
   color: var(--ink-3);
+}
+
+/* ── AI prompt preview (share sheet) ── */
+.ai-prompt {
+  margin-top: 8rpx;
+  padding-top: 20rpx;
+}
+
+.ai-prompt__label {
+  margin-bottom: 14rpx;
+}
+
+.ai-prompt__text {
+  max-height: 320rpx;
+  overflow-y: auto;
+  background: var(--code-bg);
+  padding: 20rpx 24rpx;
+  font-size: 26rpx;
+  line-height: 1.7;
+  color: var(--ink-2);
+  margin-bottom: 20rpx;
+  white-space: pre-wrap;
+}
+
+.ai-prompt__row {
+  justify-content: flex-start;
+  gap: 48rpx;
+  padding: 0;
+  margin-bottom: 16rpx;
 }
 
 /* ── bottom sheet ── */

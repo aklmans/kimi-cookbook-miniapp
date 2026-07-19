@@ -15,6 +15,9 @@ import { applyTheme, readerTagStyle, THEME_LABEL } from "../../utils/theme";
    App() registration. */
 const app = () => getApp();
 
+const AI_PROMPT =
+  "请帮我阅读 Zhapar 写的这本关于 Kimi 的书, 按需为我总结要点、回答具体问题、做读书笔记。引用时请保留作者署名和章节链接。\n\n完整 markdown: https://kimi.read.wiki/books/kimi/llms.md\n书的网页版 (含评论): https://kimi.read.wiki/books/kimi";
+
 Page({
   data: {
     theme: "light",
@@ -32,6 +35,8 @@ Page({
     /** "" | "outline" | "footnote" */
     panel: "",
     activeRef: null,
+    showAiPrompt: false,
+    aiPromptText: "",
   },
 
   onLoad(options) {
@@ -187,6 +192,7 @@ Page({
         number: `${ch.number} · 第${ord}章`,
         title: ch.title,
         lede,
+        url: `https://kimi.read.wiki/books/kimi/${this.slug}`,
       });
     } catch (e) {
       wx.showToast({ title: "海报生成失败", icon: "none" });
@@ -196,11 +202,15 @@ Page({
   },
 
   shareToAI() {
-    this.setData({ panel: "" });
-    copyText(
-      "请帮我阅读 Zhapar 写的这本关于 Kimi 的书, 按需为我总结要点、回答具体问题、做读书笔记。引用时请保留作者署名和章节链接。\n\n完整 markdown: https://kimi.read.wiki/books/kimi/llms.md\n书的网页版 (含评论): https://kimi.read.wiki/books/kimi",
-      "已复制,粘贴给 AI 即可",
-    );
+    this.setData({ showAiPrompt: true, aiPromptText: AI_PROMPT });
+  },
+
+  copyAiPrompt() {
+    copyText(AI_PROMPT, "已复制,粘贴给 AI 即可");
+  },
+
+  closeAiPrompt() {
+    this.setData({ showAiPrompt: false });
   },
 
   copyChapterLink() {

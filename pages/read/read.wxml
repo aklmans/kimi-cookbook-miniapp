@@ -36,12 +36,14 @@
         <button
           wx:if="{{chapter.prev}}"
           class="btn endcard__nav"
+          style="width: 100%"
           hover-class="btn--hover"
           bindtap="openPrev"
         >← {{chapter.prev.title}}</button>
         <button
           wx:if="{{chapter.next}}"
           class="btn btn--primary endcard__nav"
+          style="width: 100%"
           hover-class="btn--hover"
           bindtap="openNext"
         >{{chapter.next.title}} →</button>
@@ -143,7 +145,20 @@
           <view class="sheet__action" bindtap="shareToAI">分享给 AI</view>
           <view class="sheet__action" bindtap="copyChapterLink">复制链接</view>
         </view>
-        <view class="share-actions__hint">海报可长按保存或转发;分享给 AI 会复制一段带 llms.md 链接的提示词,粘贴给你常用的 AI 助手即可。</view>
+        <block wx:if="{{showAiPrompt}}">
+          <view class="ai-prompt hairline">
+            <view class="ai-prompt__label eyebrow">— 给 AI 的提示词</view>
+            <view class="ai-prompt__text">
+              <text selectable user-select>{{aiPromptText}}</text>
+            </view>
+            <view class="share-actions__row ai-prompt__row">
+              <view class="sheet__action" bindtap="copyAiPrompt">复制提示词</view>
+              <view class="sheet__action" bindtap="closeAiPrompt">收起</view>
+            </view>
+            <view class="share-actions__hint">粘贴给你常用的 AI 助手, 让它读完这本书陪你继续聊。</view>
+          </view>
+        </block>
+        <view wx:else class="share-actions__hint">海报可长按保存或转发;分享给 AI 会复制一段带 llms.md 链接的提示词,粘贴给你常用的 AI 助手即可。</view>
       </view>
     </block>
   </view>
