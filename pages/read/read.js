@@ -191,6 +191,7 @@ Page({
       await makeChapterPoster(this, {
         number: `${ch.number} · 第${ord}章`,
         title: ch.title,
+        kicker: ch.kicker || "",
         lede,
         url: `https://kimi.read.wiki/books/kimi/${this.slug}`,
       });

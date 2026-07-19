@@ -23,7 +23,7 @@ const C = {
 };
 const SERIF = '"TsangerJinKai02-W05","Songti SC","STSong",serif';
 const MONO = '"SF Mono",Menlo,Consolas,monospace';
-const TITLE_LADDER = [76, 66, 58, 48];
+const TITLE_LADDER = [66, 58, 48];
 
 function wrapText(ctx, text, maxWidth, maxLines) {
   const value = String(text || "").replace(/\s+/g, " ").trim();
@@ -103,34 +103,48 @@ export async function makeChapterPoster(page, info) {
   canvas.height = 10 * dpr;
   ctx.scale(dpr, dpr);
 
-  /* ── pass 1 · layout ── */
-  // masthead sits at y=140/180; chapter label at 232; title block starts
-  // at 280. Choose the largest ladder size whose title fits in 3 lines.
+  /* ── pass 1 · layout ──
+     Composition (Zhaphar grammar): masthead → chapter label → title
+     (calm, capped at 2 lines) → the chapter's kicker quote with a
+     vertical hairline (the protagonist) → a short muted lede → the
+     fixed 214px footer band. The title ladder caps at 2 lines so long
+     titles drop a size instead of flooding the card. */
   const contentW = RIGHT - MARGIN;
   let size = TITLE_LADDER[TITLE_LADDER.length - 1];
   let titleLines = [];
   for (const s of TITLE_LADDER) {
     ctx.font = `600 ${s}px ${SERIF}`;
-    titleLines = wrapText(ctx, info.title, contentW, 3);
+    titleLines = wrapText(ctx, info.title, contentW, 2);
     size = s;
-    if (titleLines.length <= 3) break;
+    if (titleLines.length <= 2) break;
   }
   const titleLH = Math.round(size * 1.23);
-  const titleFirstBaseline = 280 + size;
+  const titleFirstBaseline = 300 + size;
+  const titleEndY = titleFirstBaseline + (titleLines.length - 1) * titleLH;
+
+  let kickerLines = [];
+  if (info.kicker) {
+    ctx.font = `600 30px ${SERIF}`;
+    kickerLines = wrapText(ctx, info.kicker, contentW - 34, 2);
+  }
+  const kickerLH = 46;
+  const kickerTop = titleEndY + 78;
+  const kickerEndY = kickerLines.length
+    ? kickerTop + (kickerLines.length - 1) * kickerLH
+    : titleEndY;
 
   let ledeLines = [];
   if (info.lede) {
-    ctx.font = `400 28px ${SERIF}`;
-    ledeLines = wrapText(ctx, info.lede, contentW - 34, 4);
+    ctx.font = `400 26px ${SERIF}`;
+    ledeLines = wrapText(ctx, info.lede, contentW, 2);
   }
-  const ledeLH = 44;
-
-  const titleEndY = titleFirstBaseline + (titleLines.length - 1) * titleLH;
-  const ledeTop = titleEndY + 58;
+  const ledeLH = 40;
+  const ledeTop = (kickerLines.length ? kickerEndY : titleEndY) + 56;
   const ledeEndY = ledeLines.length
     ? ledeTop + (ledeLines.length - 1) * ledeLH
-    : titleEndY;
-  const contentBottom = ledeLines.length ? ledeEndY + 8 : titleEndY;
+    : kickerEndY;
+
+  const contentBottom = ledeLines.length ? ledeEndY + 8 : kickerEndY;
   const footerY = contentBottom + 46;
   const H = Math.max(765, footerY + FOOTER);
 
@@ -154,9 +168,9 @@ export async function makeChapterPoster(page, info) {
   // chapter label
   ctx.fillStyle = C.muted;
   ctx.font = `600 14px ${MONO}`;
-  drawSpaced(ctx, info.number || "", MARGIN, 232, 3);
+  drawSpaced(ctx, info.number || "", MARGIN, 236, 3);
 
-  // title — the protagonist, on the ladder
+  // title — calm: capped at two lines
   ctx.fillStyle = C.ink;
   ctx.font = `600 ${size}px ${SERIF}`;
   let lastWidth = 0;
@@ -167,9 +181,11 @@ export async function makeChapterPoster(page, info) {
   });
 
   // accent stop-dot — pinned at the last line's end, only when the
-  // sentence doesn't already close itself (a dot after 。!?… is a typo,
-  // not a signature).
-  if (!/[。!?…；，、：:;,.!?]$/.test(info.title.trim())) {
+  // RENDERED last line doesn't already close itself (a clamp-added … or
+  // a native 。!?… counts as closed; dotting after it is a typo, not a
+  // signature).
+  const renderedLast = titleLines[titleLines.length - 1] || "";
+  if (!/[。!?…；，、：:;,.!?]$/.test(renderedLast.trim())) {
     ctx.fillStyle = C.accent;
     ctx.beginPath();
     ctx.arc(
@@ -182,18 +198,27 @@ export async function makeChapterPoster(page, info) {
     ctx.fill();
   }
 
-  // lede — vertical hairline, not a color block
-  if (ledeLines.length) {
+  // the kicker quote — vertical hairline, the protagonist
+  if (kickerLines.length) {
     ctx.strokeStyle = C.rule;
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(MARGIN + 0.5, ledeTop - 30);
-    ctx.lineTo(MARGIN + 0.5, ledeEndY + 14);
+    ctx.moveTo(MARGIN + 0.5, kickerTop - 24);
+    ctx.lineTo(MARGIN + 0.5, kickerEndY + 12);
     ctx.stroke();
+    ctx.fillStyle = C.ink;
+    ctx.font = `600 30px ${SERIF}`;
+    kickerLines.forEach((line, i) => {
+      ctx.fillText(line, MARGIN + 34, kickerTop + i * kickerLH);
+    });
+  }
+
+  // lede — short, muted, metadata weight
+  if (ledeLines.length) {
     ctx.fillStyle = C.ink2;
-    ctx.font = `400 28px ${SERIF}`;
+    ctx.font = `400 26px ${SERIF}`;
     ledeLines.forEach((line, i) => {
-      ctx.fillText(line, MARGIN + 34, ledeTop + i * ledeLH);
+      ctx.fillText(line, MARGIN, ledeTop + i * ledeLH);
     });
   }
 
