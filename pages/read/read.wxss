@@ -325,6 +325,21 @@
   transform: translateY(0);
 }
 
+/* swipe-down grab strip at the sheet's top edge */
+.sheet__grab {
+  display: flex;
+  justify-content: center;
+  padding: 14rpx 0 2rpx;
+}
+
+.sheet__grab::before {
+  content: "";
+  width: 64rpx;
+  height: 8rpx;
+  border-radius: 999rpx;
+  background: var(--border);
+}
+
 .sheet__head {
   display: flex;
   align-items: center;

@@ -11,7 +11,7 @@ import {
 } from "../../utils/api";
 import { copyText } from "../../utils/clipboard";
 import { makeChapterPoster } from "../../utils/poster";
-import { applyTheme, readerTagStyle, THEME_LABEL } from "../../utils/theme";
+import { applyTheme, readerTagStyle, THEME_LABEL, THEME_ICON } from "../../utils/theme";
 
 /* Resolved lazily per call — getApp() at module top level can precede
    App() registration. */
@@ -26,6 +26,7 @@ Page({
   data: {
     theme: "light",
     themeLabel: "跟随系统",
+    themeIcon: "◐",
     fontSize: 17,
     chapter: null,
     /** Chapter payload rendered at least once — drives the skeleton, which
@@ -65,6 +66,7 @@ Page({
     this.setData({
       fontSize: app().globalData.fontSize,
       themeLabel: THEME_LABEL[app().globalData.themeMode],
+      themeIcon: THEME_ICON[app().globalData.themeMode],
     });
     this.applyThemeRefresh();
     this.loadChapter();
@@ -167,6 +169,11 @@ Page({
           prompts: chapter.prompts || [],
         });
         wx.setNavigationBarTitle({ title: chapter.title.split(" · ")[0] });
+        /* Every image in the chapter, for swipe-through preview. */
+        this.imgUrls = [];
+        const imgRe = /<img[^>]+?src="([^"]+)"/g;
+        let img;
+        while ((img = imgRe.exec(chapter.html))) this.imgUrls.push(img[1]);
         this.restoreScroll();
         if (chapter.next) prefetchChapter(chapter.next.slug);
       })
@@ -276,7 +283,10 @@ Page({
   toggleTheme() {
     app().cycleTheme();
     wx.vibrateShort({ type: "light" });
-    this.setData({ themeLabel: THEME_LABEL[app().globalData.themeMode] });
+    this.setData({
+      themeLabel: THEME_LABEL[app().globalData.themeMode],
+      themeIcon: THEME_ICON[app().globalData.themeMode],
+    });
     this.applyThemeRefresh();
   },
 
@@ -412,6 +422,19 @@ Page({
     this.setData({ panel: "" });
   },
 
+  /* Swipe-down-to-dismiss, bound only on the sheet's grab strip and header
+     so the outline scroll-view keeps its own vertical gestures. */
+  sheetTouchStart(e) {
+    this.sheetTouchY = e.touches[0].clientY;
+  },
+
+  sheetTouchEnd(e) {
+    if (this.sheetTouchY == null) return;
+    const dy = e.changedTouches[0].clientY - this.sheetTouchY;
+    this.sheetTouchY = null;
+    if (dy > 60) this.closePanel();
+  },
+
   jumpToSection(e) {
     const id = e.currentTarget.dataset.id;
     this.setData({ panel: "" });
@@ -492,8 +515,8 @@ Page({
 
   onImgTap(e) {
     const src = e.detail && e.detail.src;
-    if (src) {
-      wx.previewImage({ urls: [src] });
-    }
+    if (!src) return;
+    const urls = this.imgUrls && this.imgUrls.length ? this.imgUrls : [src];
+    wx.previewImage({ current: src, urls });
   },
 });

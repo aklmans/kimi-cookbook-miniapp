@@ -115,7 +115,7 @@
         <view class="bar__label">{{fontSize}}px</view>
       </view>
       <view class="bar__item" bindtap="toggleTheme">
-        <view class="bar__icon">◐</view>
+        <view class="bar__icon">{{themeIcon}}</view>
         <view class="bar__label">{{themeLabel}}</view>
       </view>
       <view class="bar__item" bindtap="openToc">
@@ -137,8 +137,10 @@
   <!-- bottom sheet: outline / footnote -->
   <view wx:if="{{panel}}" class="sheet-mask" bindtap="closePanel" />
   <view class="sheet t-{{theme}} {{panel ? 'is-open' : ''}}">
+    <!-- swipe-down grab strip (sheet__head below is swipeable too) -->
+    <view class="sheet__grab" bindtouchstart="sheetTouchStart" bindtouchend="sheetTouchEnd" />
     <block wx:if="{{panel === 'outline'}}">
-      <view class="sheet__head hairline">
+      <view class="sheet__head hairline" bindtouchstart="sheetTouchStart" bindtouchend="sheetTouchEnd">
         <view class="sheet__title eyebrow">— 本章目录</view>
         <view class="sheet__close" bindtap="closePanel">×</view>
       </view>
@@ -155,7 +157,7 @@
     </block>
 
     <block wx:if="{{panel === 'footnote' && activeRef}}">
-      <view class="sheet__head hairline">
+      <view class="sheet__head hairline" bindtouchstart="sheetTouchStart" bindtouchend="sheetTouchEnd">
         <view class="sheet__title eyebrow">— 引用 {{activeRef.id}}</view>
         <view class="sheet__close" bindtap="closePanel">×</view>
       </view>
@@ -167,7 +169,7 @@
     </block>
 
     <block wx:if="{{panel === 'share'}}">
-      <view class="sheet__head hairline">
+      <view class="sheet__head hairline" bindtouchstart="sheetTouchStart" bindtouchend="sheetTouchEnd">
         <view class="sheet__title eyebrow">— 分享本章</view>
         <view class="sheet__close" bindtap="closePanel">×</view>
       </view>

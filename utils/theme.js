@@ -11,12 +11,23 @@ export function applyTheme(page) {
     backgroundColor: theme === "dark" ? "#1a1a1a" : "#fafafa",
     animation: { duration: 200, timingFunc: "easeIn" },
   });
+  // The overscroll (橡皮筋) area outside the page would otherwise keep the
+  // light app.json background and glow at the edges in dark mode.
+  wx.setBackgroundColor({
+    backgroundColor: theme === "dark" ? "#1a1a1a" : "#fafafa",
+  });
 }
 
 export const THEME_LABEL = {
   system: "跟随系统",
   light: "浅色",
   dark: "深色",
+};
+
+export const THEME_ICON = {
+  system: "◐",
+  light: "☀",
+  dark: "☾",
 };
 
 /* Reader typography for mp-html. mp-html is style-isolated: page WXSS
@@ -30,6 +41,11 @@ export function readerTagStyle(theme, fontSize) {
   const ink3 = dark ? "#8a8a8a" : "#6b6b6b";
   const border = dark ? "#3a3a3a" : "#c0bfba";
   const codeBg = dark ? "#242a32" : "#f3f6f9";
+  /* Accents the tagStyle itself owns (link underline, quote/code left rail)
+     follow the page chrome's accent — #5e9fff in dark, not the bright
+     #1783ff. Accents INLINE in the HTML (sup numbers, heading markers) are
+     the site contract and stay #1783ff in both themes. */
+  const accent = dark ? "#5e9fff" : "#1783ff";
   const serif = '"TsangerJinKai02-W04","Songti SC","STSong","Noto Serif SC",serif';
   const serif600 = '"TsangerJinKai02-W05","Songti SC","STSong","Noto Serif SC",serif';
   const mono = '"SF Mono",Menlo,Consolas,monospace';
@@ -56,9 +72,9 @@ export function readerTagStyle(theme, fontSize) {
     small: `font-size:0.78em;color:${ink3}`,
     strong: `font-family:${serif600};font-weight:600;color:${ink}`,
     em: `font-style:normal;color:${ink2}`,
-    a: `color:${ink};text-decoration:underline;text-decoration-color:#1783ff;text-underline-offset:3px`,
-    blockquote: `margin:24px 0;padding:14px 18px;border-left:2px solid #1783ff;background:${codeBg};color:${ink2}`,
-    pre: `margin:24px 0;padding:16px 18px;background:${codeBg};border-left:2px solid #1783ff;font-family:${mono};font-size:0.82em;line-height:1.7;white-space:pre-wrap;word-break:break-all;color:${ink}`,
+    a: `color:${ink};text-decoration:underline;text-decoration-color:${accent};text-underline-offset:3px`,
+    blockquote: `margin:24px 0;padding:14px 18px;border-left:2px solid ${accent};background:${codeBg};color:${ink2}`,
+    pre: `margin:24px 0;padding:16px 18px;background:${codeBg};border-left:2px solid ${accent};font-family:${mono};font-size:0.82em;line-height:1.7;white-space:pre-wrap;word-break:break-all;color:${ink}`,
     code: `font-family:${mono};font-size:0.86em;background:${codeBg};padding:2px 5px;color:${ink}`,
     "pre code": `background:transparent;padding:0;font-size:1em`,
     img: `max-width:100%;display:block;margin:0 auto`,
