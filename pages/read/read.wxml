@@ -36,8 +36,27 @@
       />
     </view>
 
-    <!-- end-of-chapter passage -->
-    <view class="endcard hairline">
+    <!-- end-of-chapter passage: completion card once the whole book is
+         finished, otherwise the usual prev/next passage -->
+    <view wx:if="{{bookDone}}" class="endcard hairline">
+      <view class="endcard__kicker mono">· 全书完 ·</view>
+      <view class="endcard__done-title serif-600">读完了。</view>
+      <view class="endcard__done-text">10 章,从长文本到一套 agent 栈——你拿到了整张地图。</view>
+      <view class="endcard__actions">
+        <button
+          class="btn btn--primary endcard__nav"
+          style="width: 100%"
+          hover-class="btn--hover"
+          bindtap="goHome"
+        >回到书页</button>
+      </view>
+      <view class="endcard__row">
+        <view class="endcard__link" bindtap="copyBookLink">复制全书链接</view>
+        <view class="endcard__link" bindtap="shareBookToAI">给 AI 的全书提示词</view>
+      </view>
+    </view>
+
+    <view wx:else class="endcard hairline">
       <view class="endcard__kicker mono">· 本章完 ·</view>
       <view class="endcard__actions">
         <button
@@ -76,6 +95,13 @@
     class="fab t-{{theme}} {{barHidden ? 'fab--down' : ''}}"
     bindtap="toggleOutline"
   >≡</view>
+
+  <!-- back-to-citation chip, shown after jumping to the references block -->
+  <view
+    wx:if="{{showReturn}}"
+    class="returnchip t-{{theme}} {{barHidden ? 'returnchip--down' : ''}}"
+    bindtap="backToRef"
+  >↑ 返回引文处</view>
 
   <!-- bottom bar (floating, icon + label) -->
   <view class="barwrap t-{{theme}}">
@@ -120,7 +146,7 @@
         <view
           wx:for="{{outline}}"
           wx:key="id"
-          class="sheet__item sheet__item--lv{{item.level}}"
+          class="sheet__item sheet__item--lv{{item.level}} {{activeOutlineId === item.id ? 'is-active' : ''}}"
           hover-class="sheet__item--hover"
           data-id="{{item.id}}"
           bindtap="jumpToSection"

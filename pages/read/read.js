@@ -3,6 +3,7 @@ import {
   getChapter,
   markVisited,
   markFinished,
+  isFinished,
   saveProgress,
   getProgress,
   prefetchChapter,
@@ -41,6 +42,13 @@ Page({
     progress: 0,
     /** "" | "outline" | "footnote" */
     panel: "",
+    /** Outline entry the reader is currently at (scroll-spy on sheet open). */
+    activeOutlineId: "",
+    /** Offer "back to the citation" after jumping to the references block. */
+    showReturn: false,
+    /** Completion moment: last chapter reached its end with every chapter
+        finished — swap the endcard for the book-completion card. */
+    bookDone: false,
     activeRef: null,
     showAiPrompt: false,
     aiPromptText: "",
@@ -166,9 +174,31 @@ Page({
   },
 
   /** Reaching the endcard counts as finishing the chapter — the honest
-      counterpart to markVisited-on-load. */
+      counterpart to markVisited-on-load. On the LAST chapter it also
+      checks for the completion moment: every chapter finished. */
   onReachBottom() {
-    if (this.data.loaded) markFinished(this.slug);
+    if (!this.data.loaded) return;
+    markFinished(this.slug);
+    const ch = this.data.chapter;
+    if (!ch || ch.next || this.data.bookDone) return;
+    getBook()
+      .then((book) => {
+        const all = book.chapters || [];
+        if (all.length && all.every((c) => isFinished(c.slug))) {
+          this.setData({ bookDone: true });
+        }
+      })
+      .catch(() => {});
+  },
+
+  copyBookLink() {
+    copyText("https://kimi.read.wiki/books/kimi", "链接已复制");
+  },
+
+  /** The whole-book AI prompt (fetch-first, anti-improvisation) — the
+      same text the share sheet offers while a chapter is still loading. */
+  shareBookToAI() {
+    copyText(AI_PROMPT_BOOK, "已复制,粘贴给 AI 即可");
   },
 
   restoreScroll() {
@@ -354,7 +384,28 @@ Page({
   /* ── in-chapter outline (mp-html anchors) ── */
 
   toggleOutline() {
-    this.setData({ panel: this.data.panel === "outline" ? "" : "outline" });
+    const opening = this.data.panel !== "outline";
+    this.setData({ panel: opening ? "outline" : "" });
+    if (opening) this.locateActiveSection();
+  },
+
+  /* Scroll-spy, measured at sheet-open time rather than on the scroll
+     hot path: lazy-loaded images shift heading offsets while reading, so
+     a fresh measurement right before the sheet shows is both cheaper and
+     more accurate. The active entry is the last heading at/above the
+     reading line (a little below the nav bar). */
+  locateActiveSection() {
+    const ids = this.data.outline.map((o) => o.id);
+    if (!ids.length) return;
+    const query = wx.createSelectorQuery().in(this.selectComponent("#mp-html"));
+    for (const id of ids) query.select(`._root >>> #${id}`).boundingClientRect();
+    query.exec((res) => {
+      let active = ids[0];
+      for (let i = 0; i < ids.length; i++) {
+        if (res[i] && res[i].top <= 120) active = ids[i];
+      }
+      this.setData({ activeOutlineId: active });
+    });
   },
 
   closePanel() {
@@ -371,9 +422,21 @@ Page({
 
   jumpToRefs() {
     this.setData({ panel: "" });
+    // Remember where the citation was so the reader can jump back after
+    // browsing the references block at the chapter's end.
+    this.returnTo = this.lastScrollTop || 0;
     this.selectComponent("#mp-html")
       .navigateTo("kc-refs")
+      .then(() => {
+        if (this.returnTo > 160) this.setData({ showReturn: true });
+      })
       .catch(() => {});
+  },
+
+  backToRef() {
+    const top = this.returnTo || 0;
+    this.setData({ showReturn: false });
+    wx.pageScrollTo({ scrollTop: top, duration: 300 });
   },
 
   /** Links: footnote anchors open the reference sheet, other internal

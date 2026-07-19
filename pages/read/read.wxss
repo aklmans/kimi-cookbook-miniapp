@@ -97,6 +97,24 @@
   padding: 16rpx 0 8rpx;
 }
 
+/* book-completion card (replaces the prev/next passage on the last
+   chapter once every chapter is finished) */
+.endcard__done-title {
+  text-align: center;
+  font-size: 44rpx;
+  line-height: 1.4;
+  color: var(--ink);
+  margin-bottom: 20rpx;
+}
+
+.endcard__done-text {
+  text-align: center;
+  font-size: 28rpx;
+  line-height: 1.75;
+  color: var(--ink-2);
+  margin-bottom: 40rpx;
+}
+
 .endcard__link {
   font-size: 26rpx;
   color: var(--ink-3);
@@ -139,6 +157,27 @@
 }
 
 .fab--down {
+  bottom: 48rpx;
+}
+
+/* back-to-citation chip (left-side counterpart of the outline FAB) */
+.returnchip {
+  position: fixed;
+  left: 32rpx;
+  bottom: 216rpx;
+  padding: 16rpx 28rpx;
+  background: var(--bg-bar);
+  backdrop-filter: blur(12px);
+  border: 1rpx solid var(--border);
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  line-height: 1.4;
+  color: var(--ink-2);
+  z-index: 20;
+  transition: bottom 240ms ease;
+}
+
+.returnchip--down {
   bottom: 48rpx;
 }
 
@@ -326,6 +365,12 @@
 
 .sheet__item--hover {
   background: var(--code-bg);
+}
+
+/* scroll-spy: the outline entry at the reader's current position */
+.sheet__item.is-active {
+  color: var(--accent);
+  font-weight: 600;
 }
 
 .sheet__ref-body {
