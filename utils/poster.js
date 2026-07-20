@@ -12,10 +12,9 @@
    - makeBookPoster — whole-book share (book page): stats label + cover
      title + longer lede
    Both return the drawn poster's temp file path; the caller's share sheet
-   previews it inline and offers save / forward. The QR comes from the
-   site's qr.png service (web URL); after the Mini Program is published,
-   download the official 小程序码 from the MP console into
-   assets/mp-code.png and point QR_URL at it instead. */
+   previews it inline and offers save / forward. The QR is the OFFICIAL
+   小程序码 (assets/mp-code.jpg, downloaded from the MP console after
+   publish — scanning opens the Mini Program, not the web page). */
 
 const W = 900;
 const MARGIN = 96;
@@ -33,11 +32,9 @@ const SERIF = '"TsangerJinKai02-W05","Songti SC","STSong",serif';
 const MONO = '"SF Mono",Menlo,Consolas,monospace';
 const TITLE_LADDER = [66, 58, 48];
 
-/* QR source: the site's web-QR service today; swap for the local official
-   小程序码 asset once the MP is published (see header note). */
-function qrUrlFor(url) {
-  return `https://kimi.read.wiki/api/mp/qr.png?url=${encodeURIComponent(url)}`;
-}
+/* The poster QR is a fixed local asset: the official 小程序码 from the MP
+   console (home path). Replace the file when the code is regenerated. */
+const MP_CODE = "/assets/mp-code.jpg";
 
 function wrapText(ctx, text, maxWidth, maxLines) {
   const value = String(text || "").replace(/\s+/g, " ").trim();
@@ -253,13 +250,13 @@ async function drawPoster(page, spec) {
     await new Promise((resolve, reject) => {
       img.onload = resolve;
       img.onerror = reject;
-      img.src = qrUrlFor(spec.url);
+      img.src = MP_CODE;
     });
     const qrSize = 132;
     ctx.drawImage(img, RIGHT - qrSize, fy + 41, qrSize, qrSize);
     ctx.fillStyle = C.muted;
     ctx.font = `500 15px ${SERIF}`;
-    const cap = spec.qrCaption || "扫码读全文";
+    const cap = spec.qrCaption || "扫码打开小程序";
     const capW = ctx.measureText(cap).width;
     ctx.fillText(cap, RIGHT - qrSize + (qrSize - capW) / 2, fy + 41 + qrSize + 28);
   } catch (e) {
@@ -289,7 +286,7 @@ export function makeChapterPoster(page, info) {
     lede: info.lede || "",
     ledeMaxLines: 2,
     url: info.url,
-    qrCaption: "扫码读全文",
+    qrCaption: "扫码打开小程序",
   });
 }
 
@@ -302,6 +299,6 @@ export function makeBookPoster(page, info) {
     lede: info.lede || "",
     ledeMaxLines: 3,
     url: info.url,
-    qrCaption: info.qrCaption || "扫码读全文",
+    qrCaption: info.qrCaption || "扫码打开小程序",
   });
 }
