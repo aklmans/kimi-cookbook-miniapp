@@ -129,15 +129,6 @@
   font-size: 28rpx;
 }
 
-/* ── off-screen poster canvas ── */
-.offscreen-poster {
-  position: fixed;
-  left: -20000rpx;
-  top: 0;
-  opacity: 0;
-  pointer-events: none;
-}
-
 /* ── outline FAB ── */
 .fab {
   position: fixed;
@@ -248,56 +239,8 @@
   height: 140rpx;
 }
 
-/* ── share sheet: friend / AI tabs ── */
-.sharetab {
-  display: flex;
-  gap: 56rpx;
-  padding: 4rpx 32rpx 0;
-}
-
-.sharetab__item {
-  font-size: 32rpx;
-  color: var(--ink-3);
-  padding: 16rpx 0 14rpx;
-  border-bottom: 2rpx solid transparent;
-}
-
-.sharetab__item.is-active {
-  color: var(--ink);
-  border-bottom-color: var(--accent);
-}
-
-.share__friend {
-  padding: 0 32rpx 32rpx;
-}
-
-.share__posterframe {
-  height: 44vh;
-  border: 1rpx solid var(--border);
-  margin: 28rpx 0 20rpx;
-}
-
-.share__poster {
-  display: block;
-  width: 100%;
-}
-
-.share__poster-state {
-  padding: 120rpx 0;
-  text-align: center;
-  font-size: 26rpx;
-  color: var(--ink-3);
-}
-
-.share__hint {
-  text-align: center;
-  margin-bottom: 28rpx;
-}
-
-.share__main {
-  width: 100%;
-  margin-bottom: 20rpx;
-}
+/* share-sheet tab/poster/button styles live in app.wxss (shared with the
+   book page); only read-specific sheet parts remain here */
 
 .share__ai {
   padding: 0 32rpx 32rpx;
@@ -315,105 +258,7 @@
   margin: 28rpx 0 20rpx;
 }
 
-.share__btnrow {
-  display: flex;
-  gap: 20rpx;
-}
-
-.share__boxbtn {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  min-height: 88rpx;
-  padding: 22rpx 0;
-  border: 1rpx solid var(--border);
-  color: var(--accent);
-  font-size: 26rpx;
-}
-
-.share__boxbtn--accent {
-  border-color: var(--accent);
-}
-
-.share__boxbtn.is-disabled {
-  opacity: 0.35;
-}
-
-.share-actions__hint {
-  font-size: 22rpx;
-  line-height: 1.6;
-  color: var(--ink-3);
-}
-
-/* ── bottom sheet ── */
-.sheet-mask {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.32);
-  z-index: 30;
-  animation: sheet-mask-in 180ms ease-out;
-}
-
-@keyframes sheet-mask-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.sheet {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  max-height: 62vh;
-  background: var(--bg);
-  border-top: 1rpx solid var(--border);
-  z-index: 31;
-  transform: translateY(100%);
-  transition: transform 240ms ease;
-  display: flex;
-  flex-direction: column;
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-.sheet.is-open {
-  transform: translateY(0);
-}
-
-/* the share sheet runs taller: fixed poster frame + visible buttons */
-.sheet--tall {
-  max-height: 86vh;
-}
-
-/* swipe-down grab strip at the sheet's top edge */
-.sheet__grab {
-  display: flex;
-  justify-content: center;
-  padding: 14rpx 0 2rpx;
-}
-
-.sheet__grab::before {
-  content: "";
-  width: 64rpx;
-  height: 8rpx;
-  border-radius: 999rpx;
-  background: var(--border);
-}
-
-.sheet__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 24rpx 32rpx;
-}
-
-.sheet__close {
-  font-size: 40rpx;
-  color: var(--ink-3);
-  padding: 0 16rpx;
-  line-height: 1;
-}
+/* bottom-sheet frame/grab/close styles live in app.wxss */
 
 .sheet__scroll {
   max-height: 48vh;

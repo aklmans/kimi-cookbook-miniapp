@@ -59,8 +59,40 @@
 
     <view class="hero__foot">
       <view wx:if="{{readCount > 0}}" class="hero__progress mono">已读 {{readCount}} / {{book.chapters.length}}</view>
+      <view class="hero__about" bindtap="openShare">分享本书 →</view>
       <view class="hero__about" bindtap="openAbout">关于本书 →</view>
       <view class="hero__colophon mono">DESIGNED BY <text class="hero__colophon-hl">ZHAPHAR</text> · BUILT BY <text class="hero__colophon-hl">KIMI CODE</text></view>
+    </view>
+  </view>
+
+  <!-- off-screen poster canvas -->
+  <canvas
+    type="2d"
+    id="sharePoster"
+    class="offscreen-poster"
+    style="width: 750px; height: 940px"
+  />
+
+  <!-- share sheet (whole-book poster) -->
+  <view wx:if="{{panel}}" class="sheet-mask" bindtap="closePanel" />
+  <view class="sheet t-{{theme}} {{panel ? 'is-open' : ''}} sheet--tall">
+    <view class="sheet__grab" bindtouchstart="sheetTouchStart" bindtouchend="sheetTouchEnd" />
+    <view class="sheet__head hairline" bindtouchstart="sheetTouchStart" bindtouchend="sheetTouchEnd">
+      <view class="sheet__title eyebrow">— 分享本书</view>
+      <view class="sheet__close" bindtap="closePanel">×</view>
+    </view>
+    <view class="share__friend">
+      <scroll-view scroll-y class="share__posterframe">
+        <image wx:if="{{posterPath}}" class="share__poster" src="{{posterPath}}" mode="widthFix" />
+        <view wx:else class="share__poster-state">{{posterMaking ? '正在画海报…' : '海报生成失败,可关闭后重试'}}</view>
+      </scroll-view>
+      <view class="share-actions__hint share__hint">存下海报,发给朋友,扫码就能打开。</view>
+      <button class="btn btn--primary share__main" open-type="share" hover-class="btn--hover">发送给朋友</button>
+      <view class="share__btnrow">
+        <view class="share__boxbtn {{!posterPath ? 'is-disabled' : ''}}" bindtap="savePoster">保存海报</view>
+        <view class="share__boxbtn" bindtap="copyBookLink">复制链接</view>
+        <view class="share__boxbtn" bindtap="closePanel">关闭</view>
+      </view>
     </view>
   </view>
 </view>

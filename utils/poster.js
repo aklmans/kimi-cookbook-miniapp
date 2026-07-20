@@ -1,15 +1,21 @@
-/* Share poster — Canvas 2D, Zhaphar poster grammar ported from the
+/* Share posters — Canvas 2D, Zhaphar poster grammar ported from the
    sister project (Zhaphar/website · lib/miniapp/posters.ts):
    900px wide × content-driven height, 96px margins, right edges aligned
    to 804, warm paper + hairlines (no outer frame), Tsanger serif +
-   JetBrains-style mono, single-line title sized down to fit (the web
-   poster's ImageResponse twin uses the same rule — the two posters are
-   meant to be identical), accent stop-dot, vertical-hairline kicker
-   quote, muted lede + poster summary, a fixed 214px footer band with a
-   frame-less QR on the right. Accent (Kimi blue) appears exactly twice:
-   the masthead dash and the stop-dot.
-   Returns the drawn poster's temp file path — the read page's share
-   sheet previews it inline and offers save / forward. */
+   JetBrains-style mono, title font-size LADDER (largest that fits, not
+   a fixed size), accent stop-dot, vertical-hairline quote, a fixed 214px
+   footer band with a frame-less QR on the right. Accent (Kimi blue)
+   appears exactly twice: the masthead dash and the stop-dot.
+   Two entries share one generic draw:
+   - makeChapterPoster — chapter share (read page): number label + title +
+     kicker quote + lede
+   - makeBookPoster — whole-book share (book page): stats label + cover
+     title + longer lede
+   Both return the drawn poster's temp file path; the caller's share sheet
+   previews it inline and offers save / forward. The QR comes from the
+   site's qr.png service (web URL); after the Mini Program is published,
+   download the official 小程序码 from the MP console into
+   assets/mp-code.png and point QR_URL at it instead. */
 
 const W = 900;
 const MARGIN = 96;
@@ -25,6 +31,13 @@ const C = {
 };
 const SERIF = '"TsangerJinKai02-W05","Songti SC","STSong",serif';
 const MONO = '"SF Mono",Menlo,Consolas,monospace';
+const TITLE_LADDER = [66, 58, 48];
+
+/* QR source: the site's web-QR service today; swap for the local official
+   小程序码 asset once the MP is published (see header note). */
+function qrUrlFor(url) {
+  return `https://kimi.read.wiki/api/mp/qr.png?url=${encodeURIComponent(url)}`;
+}
 
 function wrapText(ctx, text, maxWidth, maxLines) {
   const value = String(text || "").replace(/\s+/g, " ").trim();
@@ -79,8 +92,9 @@ function hairline(ctx, x1, x2, y, color = C.rule) {
 }
 
 /* Two passes on the same ctx: measure first to size the canvas, then
-   draw into the resized canvas (resizing resets the context state). */
-export async function makeChapterPoster(page, info) {
+   draw into the resized canvas (resizing resets the context state).
+   spec: { label, title, quote?, lede?, ledeMaxLines?, url, qrCaption? } */
+async function drawPoster(page, spec) {
   const [field] = await new Promise((resolve) => {
     page
       .createSelectorQuery()
@@ -105,66 +119,46 @@ export async function makeChapterPoster(page, info) {
   ctx.scale(dpr, dpr);
 
   /* ── pass 1 · layout ──
-     Composition (Zhaphar grammar): masthead → chapter label → title
-     (ONE line, sized down to fit — same rule as the web poster's
-     ImageResponse twin) → the chapter's kicker quote with a vertical
-     hairline (the protagonist) → a short muted lede → poster summary →
-     the fixed 214px footer band. */
+     Composition (Zhaphar grammar): masthead → label → title (calm,
+     capped at 2 lines) → optional quote with a vertical hairline (the
+     protagonist on chapter posters) → a short muted lede → the fixed
+     214px footer band. */
   const contentW = RIGHT - MARGIN;
-  let size = 66;
-  for (; size > 30; size -= 2) {
-    ctx.font = `600 ${size}px ${SERIF}`;
-    if (ctx.measureText(info.title).width <= contentW) break;
+  let size = TITLE_LADDER[TITLE_LADDER.length - 1];
+  let titleLines = [];
+  for (const s of TITLE_LADDER) {
+    ctx.font = `600 ${s}px ${SERIF}`;
+    titleLines = wrapText(ctx, spec.title, contentW, 2);
+    size = s;
+    if (titleLines.length <= 2) break;
   }
-  const titleLines =
-    ctx.measureText(info.title).width <= contentW
-      ? [info.title]
-      : wrapText(ctx, info.title, contentW, 2);
   const titleLH = Math.round(size * 1.23);
   const titleFirstBaseline = 300 + size;
   const titleEndY = titleFirstBaseline + (titleLines.length - 1) * titleLH;
 
-  let kickerLines = [];
-  if (info.kicker) {
+  let quoteLines = [];
+  if (spec.quote) {
     ctx.font = `600 30px ${SERIF}`;
-    kickerLines = wrapText(ctx, info.kicker, contentW - 34, 2);
+    quoteLines = wrapText(ctx, spec.quote, contentW - 34, 2);
   }
-  const kickerLH = 46;
-  const kickerTop = titleEndY + 78;
-  const kickerEndY = kickerLines.length
-    ? kickerTop + (kickerLines.length - 1) * kickerLH
+  const quoteLH = 46;
+  const quoteTop = titleEndY + 78;
+  const quoteEndY = quoteLines.length
+    ? quoteTop + (quoteLines.length - 1) * quoteLH
     : titleEndY;
 
   let ledeLines = [];
-  if (info.lede) {
+  if (spec.lede) {
     ctx.font = `400 26px ${SERIF}`;
-    ledeLines = wrapText(ctx, info.lede, contentW, 2);
+    ledeLines = wrapText(ctx, spec.lede, contentW, spec.ledeMaxLines || 2);
   }
   const ledeLH = 40;
-  const ledeTop = (kickerLines.length ? kickerEndY : titleEndY) + 56;
+  const ledeTop = (quoteLines.length ? quoteEndY : titleEndY) + 56;
   const ledeEndY = ledeLines.length
     ? ledeTop + (ledeLines.length - 1) * ledeLH
-    : kickerEndY;
+    : quoteEndY;
 
-  /* poster summary — the middle-band companion (meta.posterSummary,
-     served by the chapter API). Same block exists on the web poster. */
-  let summaryLines = [];
-  if (info.summary) {
-    ctx.font = `400 24px ${SERIF}`;
-    summaryLines = wrapText(ctx, info.summary, contentW, 3);
-  }
-  const summaryLH = 40;
-  const summaryTop = (ledeLines.length ? ledeEndY : kickerEndY) + 36;
-  const summaryEndY = summaryLines.length
-    ? summaryTop + (summaryLines.length - 1) * summaryLH
-    : ledeEndY;
-
-  const contentBottom =
-    (summaryLines.length
-      ? summaryEndY
-      : ledeLines.length
-        ? ledeEndY
-        : kickerEndY) + 8;
+  const contentBottom = ledeLines.length ? ledeEndY + 8 : quoteEndY;
   const footerY = contentBottom + 46;
   const H = Math.max(765, footerY + FOOTER);
 
@@ -185,10 +179,10 @@ export async function makeChapterPoster(page, info) {
   drawSpacedRight(ctx, "NO. 01", RIGHT, 140, 4);
   hairline(ctx, MARGIN, RIGHT, 180, "rgba(58,58,58,0.34)");
 
-  // chapter label
+  // label (chapter number · 第N章, or book stats)
   ctx.fillStyle = C.muted;
   ctx.font = `600 14px ${MONO}`;
-  drawSpaced(ctx, info.number || "", MARGIN, 236, 3);
+  drawSpaced(ctx, spec.label || "", MARGIN, 236, 3);
 
   // title — calm: capped at two lines
   ctx.fillStyle = C.ink;
@@ -218,18 +212,18 @@ export async function makeChapterPoster(page, info) {
     ctx.fill();
   }
 
-  // the kicker quote — vertical hairline, the protagonist
-  if (kickerLines.length) {
+  // the quote — vertical hairline (chapter posters only)
+  if (quoteLines.length) {
     ctx.strokeStyle = C.rule;
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(MARGIN + 0.5, kickerTop - 24);
-    ctx.lineTo(MARGIN + 0.5, kickerEndY + 12);
+    ctx.moveTo(MARGIN + 0.5, quoteTop - 24);
+    ctx.lineTo(MARGIN + 0.5, quoteEndY + 12);
     ctx.stroke();
     ctx.fillStyle = C.ink;
     ctx.font = `600 30px ${SERIF}`;
-    kickerLines.forEach((line, i) => {
-      ctx.fillText(line, MARGIN + 34, kickerTop + i * kickerLH);
+    quoteLines.forEach((line, i) => {
+      ctx.fillText(line, MARGIN + 34, quoteTop + i * quoteLH);
     });
   }
 
@@ -239,15 +233,6 @@ export async function makeChapterPoster(page, info) {
     ctx.font = `400 26px ${SERIF}`;
     ledeLines.forEach((line, i) => {
       ctx.fillText(line, MARGIN, ledeTop + i * ledeLH);
-    });
-  }
-
-  // poster summary — muted, same weight as the lede's companion band
-  if (summaryLines.length) {
-    ctx.fillStyle = C.ink2;
-    ctx.font = `400 24px ${SERIF}`;
-    summaryLines.forEach((line, i) => {
-      ctx.fillText(line, MARGIN, summaryTop + i * summaryLH);
     });
   }
 
@@ -268,17 +253,17 @@ export async function makeChapterPoster(page, info) {
     await new Promise((resolve, reject) => {
       img.onload = resolve;
       img.onerror = reject;
-      img.src = `https://kimi.read.wiki/api/mp/qr.png?url=${encodeURIComponent(info.url)}`;
+      img.src = qrUrlFor(spec.url);
     });
     const qrSize = 132;
     ctx.drawImage(img, RIGHT - qrSize, fy + 41, qrSize, qrSize);
     ctx.fillStyle = C.muted;
     ctx.font = `500 15px ${SERIF}`;
-    const cap = "扫码读全文";
+    const cap = spec.qrCaption || "扫码读全文";
     const capW = ctx.measureText(cap).width;
     ctx.fillText(cap, RIGHT - qrSize + (qrSize - capW) / 2, fy + 41 + qrSize + 28);
   } catch (e) {
-    /* no QR — the poster still stands (footer text carries the URL) */
+    /* no QR — the poster still stands (footer text carries the title) */
   }
 
   await new Promise((r) => canvas.requestAnimationFrame(r));
@@ -293,4 +278,30 @@ export async function makeChapterPoster(page, info) {
     fileType: "png",
   });
   return tempFilePath;
+}
+
+/** Chapter poster (read page share sheet). */
+export function makeChapterPoster(page, info) {
+  return drawPoster(page, {
+    label: info.number,
+    title: info.title,
+    quote: info.kicker || "",
+    lede: info.lede || "",
+    ledeMaxLines: 2,
+    url: info.url,
+    qrCaption: "扫码读全文",
+  });
+}
+
+/** Whole-book poster (book page share sheet). */
+export function makeBookPoster(page, info) {
+  return drawPoster(page, {
+    label: `全 ${info.chapters} 章 · 约 ${info.minutes} 分钟`,
+    title: info.coverTitle || info.title,
+    quote: "",
+    lede: info.lede || "",
+    ledeMaxLines: 3,
+    url: info.url,
+    qrCaption: info.qrCaption || "扫码读全文",
+  });
 }

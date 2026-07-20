@@ -24,6 +24,12 @@ App({
     this.globalData.themeMode = wx.getStorageSync("kc:theme") || "system";
     this.globalData.fontSize = this.loadFontSize();
     this.loadTsanger();
+    // Advertise both share entry points in the capsule menu — without this
+    // only 发送给朋友 shows, even though every page defines onShareTimeline.
+    wx.showShareMenu({
+      withShareTicket: false,
+      menus: ["shareAppMessage", "shareTimeline"],
+    });
     // Warm the book payload so the first page paints from cache next time.
     getBook().catch(() => {});
     // Follow OS / WeChat dark-mode flips while the app is alive: without
