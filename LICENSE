@@ -24,7 +24,7 @@ SOFTWARE.
 
 Note: this license covers the Mini Program source code in this repository.
 The book's text and content (《Kimi · 从长文本到一套 agent 栈》, including
-the bundled about-page copy) remain under CC BY-NC-ND 4.0 by Zhapar —
+the bundled about-page copy) remain under CC BY-NC-ND 4.0 by Zhaphar —
 see https://kimi.read.wiki/books/kimi. `components/mp-html/` is vendored
 from jin-yufeng/mp-html and ships under its own MIT license
 (see components/mp-html/LICENSE).

@@ -42,7 +42,7 @@ Page({
   onShareTimeline() {
     const book = this.data.book;
     return {
-      title: book ? `${book.title} · Zhapar` : "Kimi Cookbook",
+      title: book ? `${book.title} · Zhaphar` : "Kimi Cookbook",
       query: "",
       imageUrl: "/assets/share-card.png",
     };

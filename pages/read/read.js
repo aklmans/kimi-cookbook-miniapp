@@ -20,7 +20,7 @@ const app = () => getApp();
 /* Fallback when the chapter payload hasn't loaded — the whole-book
    prompt (fetch-first, anti-improvisation). */
 const AI_PROMPT_BOOK =
-  "请阅读《Kimi · 从长文本到一套 agent 栈》—— Zhapar 写的一本讲透 Kimi 产品栈的书 (10 章, 中文): K3 与 K2.7-Code 模型、四模式、Agent 与 Agent Swarm、Deep Research、Kimi Code 与开放 API、五档会员的取舍。\n\n第一步: 先抓取这份全书 markdown 再开始 —— https://kimi.read.wiki/books/kimi/llms.md\n它是这本书的完整文本。如果抓取失败, 请直接告诉我「打不开链接」, 不要凭你对 Kimi 的了解编造本书内容; 我要的是这本书里写的判断, 不是印象里的 Kimi。\n\n然后按需为我总结要点、回答具体问题、做读书笔记。引用时请保留作者署名 (Zhapar) 和章节链接。书的网页版 (含评论): https://kimi.read.wiki/books/kimi";
+  "请阅读《Kimi · 从长文本到一套 agent 栈》—— Zhaphar 写的一本讲透 Kimi 产品栈的书 (10 章, 中文): K3 与 K2.7-Code 模型、四模式、Agent 与 Agent Swarm、Deep Research、Kimi Code 与开放 API、五档会员的取舍。\n\n第一步: 先抓取这份全书 markdown 再开始 —— https://kimi.read.wiki/books/kimi/llms.md\n它是这本书的完整文本。如果抓取失败, 请直接告诉我「打不开链接」, 不要凭你对 Kimi 的了解编造本书内容; 我要的是这本书里写的判断, 不是印象里的 Kimi。\n\n然后按需为我总结要点、回答具体问题、做读书笔记。引用时请保留作者署名 (Zhaphar) 和章节链接。书的网页版 (含评论): https://kimi.read.wiki/books/kimi";
 
 Page({
   data: {
@@ -406,11 +406,11 @@ Page({
       /* lede is optional */
     }
     return (
-      `请阅读《Kimi · 从长文本到一套 agent 栈》第 ${ch.number} 章「${ch.title}」—— Zhapar 写的这本书讲透 Kimi 产品栈 (10 章, 中文)。` +
+      `请阅读《Kimi · 从长文本到一套 agent 栈》第 ${ch.number} 章「${ch.title}」—— Zhaphar 写的这本书讲透 Kimi 产品栈 (10 章, 中文)。` +
       (lede ? `这一章: ${lede}\n\n` : "\n\n") +
       `第一步: 先抓取本章的完整 markdown 再开始 —— ${chapterMd}\n` +
       `抓取失败就直接告诉我「打不开链接」, 不要凭你对 Kimi 的了解编造; 我要的是这一章里写的判断, 不是印象里的 Kimi。\n\n` +
-      `然后按需为我总结本章要点、回答具体问题、做笔记。需要更多上下文时说一声, 我把全书 markdown (${base}/books/kimi/llms.md) 也给你。引用请保留作者署名 (Zhapar) 和章节链接 (${base}/books/kimi/${this.slug})。`
+      `然后按需为我总结本章要点、回答具体问题、做笔记。需要更多上下文时说一声, 我把全书 markdown (${base}/books/kimi/llms.md) 也给你。引用请保留作者署名 (Zhaphar) 和章节链接 (${base}/books/kimi/${this.slug})。`
     );
   },
 
