@@ -60,15 +60,13 @@
 
     <view class="hero__foot">
       <view wx:if="{{readCount > 0}}" class="hero__progress mono">已读 {{readCount}} / {{book.chapters.length}}</view>
-      <!-- v1.0.1: 书级海报分享下一版上线
       <view class="hero__about" bindtap="openShare">分享本书 →</view>
-      -->
       <view class="hero__about" bindtap="openAbout">关于本书 →</view>
       <view class="hero__colophon mono">DESIGNED BY<text class="hero__colophon-hl"> ZHAPHAR</text> · BUILT BY<text class="hero__colophon-hl"> KIMI CODE</text></view>
     </view>
   </view>
 
-  <!-- v1.0.1: 书级海报分享弹层下一版上线(canvas + sheet 整体注释)
+  <!-- off-screen poster canvas -->
   <canvas
     type="2d"
     id="sharePoster"
@@ -76,6 +74,7 @@
     style="width: 750px; height: 940px"
   />
 
+  <!-- share sheet (whole-book poster) -->
   <view wx:if="{{panel}}" class="sheet-mask" bindtap="closePanel" />
   <view class="sheet t-{{theme}} {{panel ? 'is-open' : ''}} sheet--tall">
     <view class="sheet__grab" bindtouchstart="sheetTouchStart" bindtouchend="sheetTouchEnd" />
@@ -97,5 +96,4 @@
       </view>
     </view>
   </view>
-  -->
 </view>
