@@ -26,6 +26,7 @@
          re-shoot when the brand art changes -->
     <view class="cover-card">
       <image class="cover-card__img" src="/assets/cover.png" mode="aspectFill" />
+      <view class="cover-card__tag serif-600">Think clearly. Build with Kimi<text class="hero__stop">.</text></view>
     </view>
 
     <view class="hero__eyebrow eyebrow">— 技术 · 实践</view>

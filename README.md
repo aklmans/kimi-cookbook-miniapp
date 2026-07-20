@@ -11,7 +11,7 @@
 app.js / app.json / app.wxss   全局:主题(浅/深/跟随系统)、设计 token、
                                仓耳今楷 wx.loadFontFace、页面淡入
 pages/book/                    首页 = 书页(刊头 NO.01、网页封面卡(CoverVisual
-                               栅格化)、继续阅读、已读 N/10、骨架屏)
+                               栅格化 + 标语文字层)、继续阅读、已读 N/10、骨架屏)
 pages/toc/                     目录(10 章,在读标记、已读置灰,骨架屏)
 pages/read/                    阅读器(mp-html + Tsanger 排版)
                                · 章节内大纲(浮动 ≡ → 底部弹层,锚点跳转,高亮当前节)

@@ -15,6 +15,7 @@
 }
 
 .cover-card {
+  position: relative;
   background: var(--card-ink);
   border-radius: 20rpx;
   height: 460rpx;
@@ -26,6 +27,19 @@
   display: block;
   width: 100%;
   height: 100%;
+}
+
+/* tagline over the art — the art is theme-stable dark, so the color is the
+   moon paper constant (#efe8dc), not a theme var */
+.cover-card__tag {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 44rpx;
+  text-align: center;
+  font-size: 32rpx;
+  letter-spacing: 2rpx;
+  color: #efe8dc;
 }
 
 .hero__eyebrow {
