@@ -202,6 +202,24 @@ SVG 图 / 封面卡栅格化、`/api/mp/v1/version` 缓存失效精确化、mp-r
 
 ## Credits
 
-Designed by [Zhaphar](https://x.com/ak_zhaphar) · Built by Kimi Code —
-本书讲 Kimi Code,而它的阅读端正是 Kimi Code 写的。字体与封面图由
-[kimi-cookbook](https://github.com/aklmans/kimi-cookbook) 站点提供。
+Designed by [Zhaphar](https://x.com/ak_zhaphar) · Built by Kimi Code ——
+一本讲 Kimi 的书,它的阅读端由书里的工具自己写成。
+
+**为什么写这本书**(作者原话):
+
+> 产品页会告诉你 Kimi 能做什么,但很少告诉你这件功能值不值得花十分钟学。
+> 一份会员打开的入口越来越多: 聊天框、四种模式、Agent、Agent 集群、
+> Deep Research、Kimi Code、开放平台 API。问题不再是「有没有功能」,
+> 而是「这件活该从哪一面开始」。
+>
+> 这本书只解决一类判断: Kimi 的每一面对标前沿的哪一个、买哪档够用、
+> 什么活该交给它、什么时候该回 frontier。读完以后,你应该能去做一件事,
+> 或者放心不做一件事。
+
+**字体**:正文「仓耳今楷」(Tsanger JinKai,W04 / W05 字重)由
+[仓耳字库](https://tsanger.cn/)设计——感谢仓耳字库「所有字体均可免费下载,
+允许个人非商业免费使用」的共享;小程序加载的是站点子集化后的在线字体。
+
+**封面图**:[kimi-cookbook](https://github.com/aklmans/kimi-cookbook) 站点的
+CoverVisual 月景(幽灵月盘 + 纸色月牙 + 轨道 + Kimi 蓝卫星),
+栅格化为本地资产。
