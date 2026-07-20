@@ -60,6 +60,7 @@
     <view class="hero__foot">
       <view wx:if="{{readCount > 0}}" class="hero__progress mono">已读 {{readCount}} / {{book.chapters.length}}</view>
       <view class="hero__about" bindtap="openAbout">关于本书 →</view>
+      <view class="hero__colophon mono">DESIGNED BY ZHAPHAR · BUILT BY KIMI CODE</view>
     </view>
   </view>
 </view>

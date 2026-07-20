@@ -135,6 +135,12 @@
   text-underline-offset: 6rpx;
 }
 
+.hero__colophon {
+  font-size: 20rpx;
+  letter-spacing: 4rpx;
+  color: var(--ink-3);
+}
+
 .state {
   min-height: 60vh;
   display: flex;
