@@ -42,6 +42,12 @@
   color: #efe8dc;
 }
 
+/* the brand word pops in the satellite's own Kimi blue */
+.cover-card__tag-hl {
+  color: #1783ff;
+  font-weight: 700;
+}
+
 .hero__eyebrow {
   margin-bottom: 24rpx;
 }
@@ -139,6 +145,12 @@
   font-size: 20rpx;
   letter-spacing: 4rpx;
   color: var(--ink-3);
+}
+
+/* proper nouns step forward from the quiet colophon line */
+.hero__colophon-hl {
+  font-weight: 700;
+  color: var(--ink);
 }
 
 .state {

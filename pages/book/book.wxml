@@ -26,7 +26,7 @@
          re-shoot when the brand art changes -->
     <view class="cover-card">
       <image class="cover-card__img" src="/assets/cover.png" mode="aspectFill" />
-      <view class="cover-card__tag serif-600">Think clearly. Build with Kimi<text class="hero__stop">.</text></view>
+      <view class="cover-card__tag serif-600">Think clearly. Build with <text class="cover-card__tag-hl">Kimi</text><text class="hero__stop">.</text></view>
     </view>
 
     <view class="hero__eyebrow eyebrow">— 技术 · 实践</view>
@@ -60,7 +60,7 @@
     <view class="hero__foot">
       <view wx:if="{{readCount > 0}}" class="hero__progress mono">已读 {{readCount}} / {{book.chapters.length}}</view>
       <view class="hero__about" bindtap="openAbout">关于本书 →</view>
-      <view class="hero__colophon mono">DESIGNED BY ZHAPHAR · BUILT BY KIMI CODE</view>
+      <view class="hero__colophon mono">DESIGNED BY <text class="hero__colophon-hl">ZHAPHAR</text> · BUILT BY <text class="hero__colophon-hl">KIMI CODE</text></view>
     </view>
   </view>
 </view>
