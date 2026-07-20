@@ -1,7 +1,8 @@
 import { getBook, getLastRead, isFinished, explainError } from "../../utils/api";
 import { applyTheme } from "../../utils/theme";
-import { copyText } from "../../utils/clipboard";
-import { makeBookPoster } from "../../utils/poster";
+// v1.0.1: 书级海报分享下一版上线 —— 相关 import 一并注释
+// import { copyText } from "../../utils/clipboard";
+// import { makeBookPoster } from "../../utils/poster";
 
 Page({
   data: {
@@ -10,10 +11,10 @@ Page({
     resumeLabel: "开始阅读 →",
     readCount: 0,
     error: "",
-    /** Share sheet: open state, poster temp path + draw state. */
-    panel: "",
-    posterPath: "",
-    posterMaking: false,
+    // v1.0.1: 书级海报分享下一版上线
+    // panel: "",
+    // posterPath: "",
+    // posterMaking: false,
   },
 
   onLoad() {
@@ -96,7 +97,7 @@ Page({
     wx.navigateTo({ url: "/pages/about/about" });
   },
 
-  /* ── share sheet (whole-book poster) ── */
+  /* v1.0.1: 书级海报分享下一版上线 —— 功能整体注释(入口在 wxml 同区注释)。
 
   openShare() {
     this.setData({ panel: "share" });
@@ -118,7 +119,7 @@ Page({
     if (dy > 60) this.closePanel();
   },
 
-  /** Whole-book poster, drawn once per visit, previewed in the sheet. */
+  // Whole-book poster, drawn once per visit, previewed in the sheet.
   async ensurePoster() {
     if (this.data.posterPath || this.data.posterMaking) return;
     const book = this.data.book;
@@ -134,7 +135,7 @@ Page({
       });
       if (path) this.setData({ posterPath: path });
     } catch (e) {
-      /* the preview area keeps its failure note */
+      // the preview area keeps its failure note
     }
     this.setData({ posterMaking: false });
   },
@@ -152,4 +153,5 @@ Page({
   copyBookLink() {
     copyText("https://kimi.read.wiki/books/kimi", "链接已复制");
   },
+  */
 });
