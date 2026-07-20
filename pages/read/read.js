@@ -98,7 +98,7 @@ Page({
     return {
       title: ch ? `${ch.title} · Kimi Cookbook` : "Kimi Cookbook",
       path: `/pages/read/read?slug=${this.slug}`,
-      imageUrl: "/assets/moon-tile.png",
+      imageUrl: "/assets/share-card.png",
     };
   },
 
@@ -107,6 +107,7 @@ Page({
     return {
       title: ch ? `${ch.title} · Kimi Cookbook` : "Kimi Cookbook",
       query: `slug=${this.slug}`,
+      imageUrl: "/assets/share-card.png",
     };
   },
 

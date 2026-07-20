@@ -32,11 +32,10 @@ Page({
   },
 
   onShareAppMessage() {
-    const book = this.data.book;
     return {
-      title: book ? book.title : "Kimi Cookbook",
+      title: "Think clearly. Build with Kimi.",
       path: "/pages/book/book",
-      imageUrl: "/assets/moon-tile.png",
+      imageUrl: "/assets/share-card.png",
     };
   },
 
@@ -45,6 +44,7 @@ Page({
     return {
       title: book ? `${book.title} · Zhapar` : "Kimi Cookbook",
       query: "",
+      imageUrl: "/assets/share-card.png",
     };
   },
 

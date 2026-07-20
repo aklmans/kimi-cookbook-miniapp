@@ -33,9 +33,10 @@ utils/api.js                   内容 API 客户端(SWR 缓存 1h)+ 阅读状态
 utils/poster.js                海报 canvas(章/书两级,二维码现用站点 qr.png;
                                发布后换本地官方小程序码)
 utils/theme.js                 主题应用 + mp-html tag-style 排版表(Tsanger 栈)
-assets/moon-tile.png           月之暗面站标(与网页 favicon 同构图,分享卡片用)
+assets/moon-tile.png           月之暗面站标(与网页 favicon 同构图)
 assets/cover.png               首页封面:站点 CoverVisual 月景栅格化
                                (dev server + Playwright 截图,品牌图变更时重出)
+assets/share-card.png          分享卡片图:cover.png 居中裁 5:4(1150×920)
 ```
 
 ## 本地跑起来(验收)
@@ -62,9 +63,9 @@ assets/cover.png               首页封面:站点 CoverVisual 月景栅格化
 - [ ] 阅读:底栏「Aa 设置」弹层:字号四档点选(重排后进度不丢)、主题三态
       三选一;弹层下滑即关;图片点开左右滑动;长按可选中复制代码;
       恢复上次位置后浮条提示、可点「回开头」
-- [ ] 分享:书页/章节分享卡片带月砖图;章节分享弹层双 tab——朋友 tab 海报
-      内联预览、可保存到相册,AI tab 提示词框即拷;胶囊菜单含朋友圈入口
-      (正式发布后可见)
+- [ ] 分享:书页标题「Think clearly. Build with Kimi.」,书页/章节分享卡片
+      带月景图(share-card.png);章节分享弹层双 tab——朋友 tab 海报内联预览、
+      可保存到相册,AI tab 提示词框即拷;胶囊菜单含朋友圈入口(正式发布后可见)
 - [ ] 深色全量走一遍(封面卡、代码面、弹层、底部栏、链接与引用左边条浅蓝 accent)
 
 ## 发布(P3)
