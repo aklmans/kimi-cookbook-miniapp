@@ -9,8 +9,9 @@
 无构建、无测试套件;富文本靠 vendored mp-html v2.5.2
 (`components/mp-html/`,dist/mp-weixin 压缩产物)。
 
-**地图**:README.md 有结构说明、本地起服务步骤、走查清单、内容契约、
-Backlog。先读它,再读这份的硬规则。
+**地图**:README.md(功能/架构/概览)→ `docs/design.md`(设计语言:
+token、字体、组件词汇)→ `docs/contributing.md`(二开指南:环境、
+内容契约、走查清单、资源再生成)。先读它们,再读这份的硬规则。
 
 ---
 
@@ -46,6 +47,7 @@ Backlog。先读它,再读这份的硬规则。
   (`app.wxss`);`utils/theme.js` 的 `applyTheme()` 统一刷导航栏和
   `wx.setBackgroundColor`(橡皮筋底色)。三态存 `globalData.themeMode`,
   设置弹层走 `setThemeMode` / `setFontSize`,没有 cycle 了。
+  **完整的色彩 token、字体栈、组件词汇见 `docs/design.md`,改样式前必读。**
 - 正文排版全部在 `utils/theme.js` 的 `readerTagStyle(theme, fontSize)`;
   HTML 内联 accent(`#1783ff`)是站点契约**不动**,tagStyle 自己算的
   accent 深色用 `#5e9fff`。
@@ -80,9 +82,15 @@ Backlog。先读它,再读这份的硬规则。
 
 - 提交前:`node --input-type=module --check` 过全部改动 .js;改动涉及
   交互的,在 README 走查清单上补/改对应项。
-- 提交信息:`<type>(mp): <中文一行>`,type ∈ feat / fix / chore,
-  单行、无 trailer。**站点仓库是另一套规矩**(npm test / lint / tsc /
-  build gates + `Co-Authored-By` trailer),两边不要混。
+- 提交信息:`<type>(mp): <中文一行>`,type ∈ feat / fix / chore / docs;
+  署名 trailer(协作者图标,账号是项目方注册的 bot 号):
+
+  ```
+  Co-authored-by: Moonshot Agent <307365324+moonshot-agent@users.noreply.github.com>
+  ```
+
+  **站点仓库是另一套规矩**(npm test / lint / tsc / build gates +
+  `Co-Authored-By: Kimi Code <noreply@moonshot.ai>`),两边不要混。
 - git 写操作(commit / push 等)必须先得到用户当季确认;惯例是每批做完
   报一个建议提交信息,用户说提交再提交。
 
