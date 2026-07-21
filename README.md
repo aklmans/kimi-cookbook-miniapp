@@ -1,7 +1,7 @@
 # Kimi Cookbook · 微信小程序
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Content: CC BY-NC-ND 4.0](https://img.shields.io/badge/Content-CC%20BY--NC--ND%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
+[![Content: CC BY-NC-SA 4.0](https://img.shields.io/badge/Content-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 **《Kimi · 从长文本到一套 agent 栈》的阅读端 —— Think clearly. Build with Kimi.**
 
@@ -108,24 +108,14 @@ SVG 图 / 封面卡栅格化、`/api/mp/v1/version` 缓存失效精确化、mp-r
 ## License
 
 - **代码**:[MIT](LICENSE) © Kimi Cookbook contributors
-- **书中内容**(含关于页内置文案):[CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) © Zhaphar
+- **书中内容**(含关于页内置文案):[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) © Zhaphar
 - `components/mp-html/`:[MIT](components/mp-html/LICENSE) © Jin Yufeng(vendored)
 
 ## Credits
 
 Designed by [Zhaphar](https://x.com/ak_zhaphar) · Built by Kimi Code ——
 一本讲 Kimi 的书,它的阅读端由书里的工具自己写成。
-
-**为什么写这本书**(作者原话):
-
-> 产品页会告诉你 Kimi 能做什么,但很少告诉你这件功能值不值得花十分钟学。
-> 一份会员打开的入口越来越多: 聊天框、四种模式、Agent、Agent 集群、
-> Deep Research、Kimi Code、开放平台 API。问题不再是「有没有功能」,
-> 而是「这件活该从哪一面开始」。
->
-> 这本书只解决一类判断: Kimi 的每一面对标前沿的哪一个、买哪档够用、
-> 什么活该交给它、什么时候该回 frontier。读完以后,你应该能去做一件事,
-> 或者放心不做一件事。
+写这本书的原由,见[关于本书](https://kimi.read.wiki/about)。
 
 **字体**:正文「仓耳今楷 05」(W04 / W05 字重)由
 [仓耳字库](https://tsanger.cn/)设计——感谢仓耳字库开放旗下字体免费下载、

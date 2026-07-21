@@ -17,7 +17,7 @@ const DEFAULT_ABOUT = {
     { label: "形态", value: "在线 · PDF · llms.md" },
     { label: "语言", value: "中文" },
     { label: "订阅", value: "RSS" },
-    { label: "授权", value: "CC BY-NC-ND 4.0" },
+    { label: "授权", value: "CC BY-NC-SA 4.0" },
   ],
   sections: [
     {
@@ -85,7 +85,7 @@ const DEFAULT_ABOUT = {
         "这里不做 affiliate 排序,不夹带课程软广,不为了新模型发布重写整本书。大改版会补边注,判断变了会开新章。读到哪一章想说点什么,网页版的章末都有评论区,也可以直接发邮件。",
       ],
       license:
-        "本书内容遵循 CC BY-NC-ND 4.0: 允许免费阅读、AI 摘读、引用与转发,须保留作者署名 (Zhaphar) 与原文链接; 禁止商业再发布与衍生改写。",
+        "本书内容遵循 CC BY-NC-SA 4.0: 允许免费阅读、AI 摘读、引用与转发;衍生作品须署名 (Zhaphar) 并同协议共享,禁止商业再发布。",
       contacts: [
         {
           label: "Twitter / X",
