@@ -127,6 +127,9 @@
   border: 1rpx solid var(--border);
   color: var(--accent);
   font-size: 28rpx;
+  /* match .btn's 1.4 (not the page's 1.8) so box buttons and real buttons
+     land on the same 88rpx — the "white button looks shorter" bug */
+  line-height: 1.4;
 }
 
 /* ── outline FAB ── */

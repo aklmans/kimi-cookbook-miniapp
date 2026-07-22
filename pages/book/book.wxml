@@ -18,7 +18,10 @@
   <view wx:else class="hero">
     <view class="masthead">
       <view class="masthead__brand mono">KIMI COOKBOOK</view>
-      <view class="masthead__serial mono">NO. 01</view>
+      <view class="masthead__right">
+        <view class="masthead__theme" bindtap="toggleTheme">{{themeIcon}}</view>
+        <view class="masthead__serial mono">NO. 01</view>
+      </view>
     </view>
 
     <!-- the web cover art (CoverVisual moon scene), rasterized once to a

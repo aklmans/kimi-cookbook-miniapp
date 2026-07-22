@@ -83,9 +83,9 @@ Tokens 定义在 `app.wxss`,挂在页面根 view 的 `t-light` / `t-dark` class 
 - **骨架屏**:`.skeleton` + sweep 扫光(1.2s),先于内容出现;
   阅读页骨架用独立 `loaded` 标志驱动(不能复用 `!html`,主题冲刷会闪)。
 - **海报语法**(utils/poster.js,Zhaphar 海报体):900px 宽、96px 边距、
-  右缘对齐 804、无框 hairline、Tsanger + mono、标题字号阶梯(放得下
-  才用大)、accent 恰好出现两次(masthead dash + 句点)、
-  底部 214px 固定带放小程序码。
+  右缘对齐 804、无框 hairline、Tsanger + mono、章海报标题单行收缩至放下、
+  accent 恰好出现两次(masthead dash + 句点)、底部 214px 固定带放小程序码;
+  色板两套(浅 C / 深 C_DARK;书海报 D / D_LIGHT)随当前主题。
 
 ## 5 · 动效
 

@@ -346,10 +346,12 @@ Page({
     }
   },
 
-  /** Draw the chapter poster once per visit and cache its temp path for
+  /** Draw the chapter poster once per theme and cache its temp path for
       the share sheet's inline preview. */
   async ensurePoster() {
-    if (this.data.posterPath || this.data.posterMaking) return;
+    if (this.data.posterMaking) return;
+    const theme = app().resolveTheme();
+    if (this.data.posterPath && this.posterTheme === theme) return;
     const ch = this.data.chapter;
     if (!ch) return;
     this.setData({ posterMaking: true });
@@ -373,8 +375,11 @@ Page({
         lede,
         summary: ch.posterSummary || "",
         url: `https://kimi.read.wiki/books/kimi/${this.slug}`,
-      });
-      if (path) this.setData({ posterPath: path });
+      }, theme);
+      if (path) {
+        this.posterTheme = theme;
+        this.setData({ posterPath: path });
+      }
     } catch (e) {
       /* the preview area keeps its failure note */
     }

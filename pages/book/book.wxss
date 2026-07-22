@@ -5,13 +5,25 @@
 .masthead {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   padding-bottom: 24rpx;
   margin-bottom: 32rpx;
   border-bottom: 1rpx solid var(--border);
   font-size: 20rpx;
   letter-spacing: 6rpx;
   color: var(--ink-3);
+}
+
+.masthead__right {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.masthead__theme {
+  font-size: 30rpx;
+  color: var(--ink-3);
+  padding: 8rpx;
 }
 
 .cover-card {

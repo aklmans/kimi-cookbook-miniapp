@@ -261,6 +261,8 @@
   border: 1rpx solid var(--border);
   color: var(--accent);
   font-size: 26rpx;
+  /* see .endcard__box — 1.4, not the page's 1.8 */
+  line-height: 1.4;
 }
 
 .share__boxbtn--accent {

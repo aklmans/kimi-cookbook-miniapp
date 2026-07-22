@@ -1,11 +1,14 @@
 import { getBook, getLastRead, isFinished, explainError } from "../../utils/api";
-import { applyTheme } from "../../utils/theme";
+import { applyTheme, THEME_ICON } from "../../utils/theme";
 import { copyText } from "../../utils/clipboard";
 import { makeBookPoster } from "../../utils/poster";
 
 Page({
   data: {
     theme: "light",
+    /** Picked themeMode for the masthead toggle's icon. */
+    themeMode: "system",
+    themeIcon: "◐",
     book: null,
     resumeLabel: "开始阅读 →",
     readCount: 0,
@@ -18,16 +21,33 @@ Page({
 
   onLoad() {
     applyTheme(this);
+    this.syncThemeMode();
     this.loadBook();
   },
 
   onShow() {
     this.applyThemeRefresh();
+    this.syncThemeMode();
     this.refreshResume();
   },
 
   applyThemeRefresh() {
     applyTheme(this);
+  },
+
+  syncThemeMode() {
+    const mode = getApp().globalData.themeMode;
+    this.setData({ themeMode: mode, themeIcon: THEME_ICON[mode] });
+  },
+
+  /** Masthead theme toggle: 跟随系统 → 浅色 → 深色, persisted. */
+  toggleTheme() {
+    const order = { system: "light", light: "dark", dark: "system" };
+    const next = order[getApp().globalData.themeMode] || "system";
+    getApp().setThemeMode(next);
+    wx.vibrateShort({ type: "light" });
+    this.setData({ themeMode: next, themeIcon: THEME_ICON[next] });
+    this.applyThemeRefresh();
   },
 
   onShareAppMessage() {
@@ -118,9 +138,11 @@ Page({
     if (dy > 60) this.closePanel();
   },
 
-  /** Whole-book poster, drawn once per visit, previewed in the sheet. */
+  /** Whole-book poster, drawn once per theme, previewed in the sheet. */
   async ensurePoster() {
-    if (this.data.posterPath || this.data.posterMaking) return;
+    if (this.data.posterMaking) return;
+    const theme = getApp().resolveTheme();
+    if (this.data.posterPath && this.posterTheme === theme) return;
     const book = this.data.book;
     if (!book) return;
     this.setData({ posterMaking: true });
@@ -130,9 +152,14 @@ Page({
         lede: book.lede,
         chapters: book.chapters.length,
         minutes: book.readMinutes,
+        updated: book.updated,
+        author: book.author,
         url: "https://kimi.read.wiki/books/kimi",
-      });
-      if (path) this.setData({ posterPath: path });
+      }, theme);
+      if (path) {
+        this.posterTheme = theme;
+        this.setData({ posterPath: path });
+      }
     } catch (e) {
       /* the preview area keeps its failure note */
     }
