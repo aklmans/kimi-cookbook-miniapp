@@ -12,9 +12,10 @@
    - makeBookPoster — whole-book share (book page): stats label + cover
      title + longer lede
    Both return the drawn poster's temp file path; the caller's share sheet
-   previews it inline and offers save / forward. The QR is the OFFICIAL
-   小程序码 (assets/mp-code.jpg, downloaded from the MP console after
-   publish — scanning opens the Mini Program, not the web page). */
+   previews it inline and offers save / forward. All QRs come from the
+   site's 小程序码 endpoint (/api/mp/v1/qrcode — home code without slug,
+   per-chapter code with ?slug=...), falling back to the local official
+   home code (assets/mp-code.jpg) while the endpoint is unshipped. */
 
 const W = 900;
 const MARGIN = 96;
@@ -32,8 +33,8 @@ const SERIF = '"TsangerJinKai02-W05","Songti SC","STSong",serif';
 const MONO = '"SF Mono",Menlo,Consolas,monospace';
 const TITLE_LADDER = [66, 58, 48];
 
-/* The poster QR is a fixed local asset: the official 小程序码 from the MP
-   console (home path). Replace the file when the code is regenerated. */
+/* The local official home 小程序码 (MP console download): the book
+   poster's QR, and every QR's fallback when a remote code fails. */
 const MP_CODE = "/assets/mp-code.jpg";
 
 function wrapText(ctx, text, maxWidth, maxLines) {
@@ -245,15 +246,27 @@ async function drawPoster(page, spec) {
   const stamp = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, "0")}.${String(today.getDate()).padStart(2, "0")}`;
   drawSpaced(ctx, stamp, MARGIN, fy + 116, 2);
 
-  try {
-    const img = canvas.createImage();
-    await new Promise((resolve, reject) => {
-      img.onload = resolve;
+  // QR — chapter posters try the per-chapter endpoint first (scan lands on
+  // the exact chapter), falling back to the local home code while the
+  // endpoint is unshipped or the network flakes.
+  const qrSize = 132;
+  const drawQrImage = (src) =>
+    new Promise((resolve, reject) => {
+      const img = canvas.createImage();
+      img.onload = () => {
+        ctx.drawImage(img, RIGHT - qrSize, fy + 41, qrSize, qrSize);
+        resolve();
+      };
       img.onerror = reject;
-      img.src = MP_CODE;
+      img.src = src;
     });
-    const qrSize = 132;
-    ctx.drawImage(img, RIGHT - qrSize, fy + 41, qrSize, qrSize);
+  try {
+    try {
+      await drawQrImage(spec.qrSrc || MP_CODE);
+    } catch (e) {
+      if (!spec.qrSrc) throw e;
+      await drawQrImage(MP_CODE);
+    }
     ctx.fillStyle = C.muted;
     ctx.font = `500 15px ${SERIF}`;
     const cap = spec.qrCaption || "扫码打开小程序";
@@ -286,6 +299,9 @@ export function makeChapterPoster(page, info) {
     lede: info.lede || "",
     ledeMaxLines: 2,
     url: info.url,
+    qrSrc: info.slug
+      ? `https://kimi.read.wiki/api/mp/v1/qrcode?slug=${encodeURIComponent(info.slug)}`
+      : "",
     qrCaption: "扫码打开小程序",
   });
 }
@@ -299,6 +315,7 @@ export function makeBookPoster(page, info) {
     lede: info.lede || "",
     ledeMaxLines: 3,
     url: info.url,
+    qrSrc: "https://kimi.read.wiki/api/mp/v1/qrcode",
     qrCaption: info.qrCaption || "扫码打开小程序",
   });
 }

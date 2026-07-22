@@ -96,10 +96,8 @@ token、字体、组件词汇)→ `docs/contributing.md`(二开指南:环境、
 
 ## 7 · 接手时先核对的站点侧待办
 
-- `lib/mp-render.tsx` 脚注契约(fnref 锚点、refs 去 id、↩ 回跳)——
-  已改完,待站点提交部署;小程序全部有兼容回退,不部署不会坏,只是没有
-  新行为。
-- `book` 载荷 `about` 字段——契约已交给服务端 Agent 开发;小程序内置
-  兜底,上线后 1h 缓存过期自动切换。
-- 其余见 README Backlog(SVG 栅格化、version 缓存失效、img 宽高预留、
-  P3 备案 / 正式 AppID / 提审)。
+- 已落地:脚注契约(fnref 锚点、refs 去 id、↩ 回跳)、`book` 载荷
+  `about` 字段、`GET /api/mp/v1/qrcode`(按级生成首页/章级码)——
+  小程序均有兼容回退;海报端点码随下次小程序发版生效(海报在客户端
+  生成,线上旧版仍用兜底的本地官方码)。
+- 其余见 README Backlog(SVG 栅格化、version 缓存失效、img 宽高预留)。

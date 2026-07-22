@@ -51,6 +51,10 @@ docs/                          本文档、design.md、screenshots/(仅 GitHub,
   节标题不带句点(小程序自补 accent 点);字段缺失或 `sections` 为空时
   回退 `pages/about/about.js` 内置文案,服务端随时上下线,无需发版。
 - 外部链接在小程序里点不开,阅读页统一「复制链接」。
+- 海报二维码统一来自 `/api/mp/v1/qrcode`(无 slug = 首页码,
+  `?slug=<章>` = 章级直达码,服务端 wxacode.getUnlimited 生成),
+  加载失败回退本地官方码 `assets/mp-code.jpg`;阅读页兼容
+  `options.scene` 作为 slug 来源(小程序码进入)。
 - 深色模式依赖 app.json `darkmode: true` —— 没有它,系统深色环境会把主题
   API 误报为 light,浅色配色画到系统深色页上(不可读)。
   mp-html 只在 content 变化时重排,tagStyle 变更必须冲刷 content 才生效。

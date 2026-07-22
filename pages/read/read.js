@@ -68,7 +68,8 @@ Page({
   },
 
   onLoad(options) {
-    const slug = options.slug;
+    // 小程序码进入时章节标识在 scene(URL 编码),普通分享链接在 slug。
+    const slug = options.slug || decodeURIComponent(options.scene || "");
     if (!slug) {
       this.setData({ error: "缺少章节参数" });
       return;
@@ -365,6 +366,7 @@ Page({
         Number(ch.number) - 1
       ];
       const path = await makeChapterPoster(this, {
+        slug: this.slug,
         number: `${ch.number} · 第${ord}章`,
         title: ch.title,
         kicker: ch.kicker || "",
